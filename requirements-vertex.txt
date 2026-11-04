@@ -1,0 +1,2 @@
+# Optional cloud-model adapter. The default Ollama lab setup does not install this.
+google-genai>=1,<2
