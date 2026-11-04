@@ -16,6 +16,8 @@ In plain language, the repair rules live in `core/` and should not depend on a p
 
 **Why this matters for Software Engineering for AI:** LLM output is probabilistic, providers and prompts evolve, and external services fail. The harness must therefore enforce workspace boundaries, test execution, traceability, and stopping rules in deterministic code. Separating these responsibilities lets us replace Ollama with a cloud model, test the loop with `ScriptedClient`, or change Gradio without rewriting the repair policy. You do not need to memorize the architecture terms before starting the exercises. Use them as a map for deciding where a responsibility belongs. For optional background, read [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 
+## Clean Architecture of the Repair Agent
+
 ```mermaid
 flowchart LR
     subgraph adapters[Interface Adapters]
