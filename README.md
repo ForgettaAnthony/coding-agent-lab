@@ -6,6 +6,10 @@
 
 In this lab, you will build a Python repair agent. It receives a small buggy Python project and its tests; it must inspect the code, reproduce the failure, make a focused repair, and run the tests safely. Its output is a visible execution trace, the modified project files, and a final test result.
 
+**Activity objective:** implement the essential repair-agent loop yourself, then explain how its prompts, tools, test runner, and stopping rules work together as a dependable software system.
+
+**Why use an agent?** A one-shot LLM answer cannot inspect the actual project, apply a change, or prove that the change works. An agent creates a bounded loop: it observes the project, chooses an approved action, receives the result, and keeps working until tests verify the repair or its budget ends.
+
 The goal is not only to use an LLM, but to engineer the surrounding **agent harness**: prompts, bounded tools, a sandbox, stopping rules, and a user interface. To organize that AI system using Software Engineering for AI (**SE4AI**) practices, the lab follows Robert C. Martin's **Clean Architecture** and its **Dependency Rule**: source-code dependencies point inward, from volatile technology details toward stable policy.
 
 In plain language: the repair rules live in `core/` and should not depend on a particular UI, model provider, or Docker command. The core describes the small operations it needs using Python `Protocol` interfaces, called **ports**. Code in `adapters/` supplies the real implementations, called **adapters**—for example, an Ollama client, the Docker test runner, or the Gradio UI.
