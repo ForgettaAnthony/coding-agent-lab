@@ -10,11 +10,11 @@ In this lab, you will build a Python repair agent. It receives a small buggy Pyt
 
 **Why use an agent?** A one-shot LLM answer cannot inspect the actual project, apply a change, or prove that the change works. An agent creates a bounded loop: it observes the project, chooses an approved action, receives the result, and keeps working until tests verify the repair or its budget ends.
 
-The goal is not only to use an LLM, but to engineer the surrounding **agent harness**: prompts, bounded tools, a sandbox, stopping rules, and a user interface. To organize that AI system using Software Engineering for AI (**SE4AI**) practices, the lab follows Robert C. Martin's **Clean Architecture** and its **Dependency Rule**: source-code dependencies point inward, from volatile technology details toward stable policy.
+The focus is not only the LLM. It is the surrounding **agent harness**: prompts, bounded tools, a sandbox, stopping rules, and a user interface. To organize this AI system with Software Engineering for AI (**SE4AI**) practices, the lab uses Robert C. Martin's **Clean Architecture** and its **Dependency Rule**: source-code dependencies point inward, from changing technology details toward stable policy.
 
-In plain language: the repair rules live in `core/` and should not depend on a particular UI, model provider, or Docker command. The core describes the small operations it needs using Python `Protocol` interfaces, called **ports**. Code in `adapters/` supplies the real implementations, called **adapters**—for example, an Ollama client, the Docker test runner, or the Gradio UI.
+In plain language, the repair rules live in `core/` and should not depend on a particular UI, model provider, or Docker command. The core describes the small operations it needs using Python `Protocol` interfaces, called **ports**. Code in `adapters/` supplies the concrete implementations. Examples include an Ollama client, the Docker test runner, and the Gradio UI.
 
-**Why this matters for Software Engineering for AI:** an LLM is probabilistic, model providers and prompts change quickly, and external services can fail. In contrast, the harness must reliably enforce workspace boundaries, test execution, traceability, and stopping rules. Keeping those responsibilities separate lets us replace Ollama with a cloud model, test the agent loop with `ScriptedClient`, or change Gradio without rewriting the repair policy. It also makes the safety controls belong to deterministic software—not to the model's good intentions. You do not need to memorize the architecture terms before starting the exercises; use them as a map for where each responsibility belongs. For optional background, read [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
+**Why this matters for Software Engineering for AI:** LLM output is probabilistic, providers and prompts evolve, and external services fail. The harness must therefore enforce workspace boundaries, test execution, traceability, and stopping rules in deterministic code. Separating these responsibilities lets us replace Ollama with a cloud model, test the loop with `ScriptedClient`, or change Gradio without rewriting the repair policy. You do not need to memorize the architecture terms before starting the exercises. Use them as a map for deciding where a responsibility belongs. For optional background, read [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 
 ```mermaid
 flowchart LR
@@ -54,17 +54,17 @@ flowchart LR
 
 ### How the layers map to this repository
 
-- `core/` — **Entities**, **Use Cases**, and policy-owned **Ports**. It contains the repair policy and does not import user interfaces, Docker, model SDKs, GitHub, or Langfuse.
-- `adapters/` — **Interface Adapters** plus **Frameworks & Drivers**. It translates the core's ports to concrete technologies.
+- `core/`: **Entities**, **Use Cases**, and policy-owned **Ports**. It contains the repair policy and does not import user interfaces, Docker, model SDKs, GitHub, or Langfuse.
+- `adapters/`: **Interface Adapters** plus **Frameworks & Drivers**. It translates the core's ports to concrete technologies.
   - `models/ollama.py` owns the Ollama integration; the OpenAI and Vertex adapters follow the same boundary.
   - `research/github_research.py` is the optional external-research adapter.
   - `observability/langfuse.py` is the optional trajectory-recorder adapter.
   - `sandbox/` owns the disposable workspace and Docker isolation.
   - `gradio_ui.py` remains a small presentation adapter at the package root.
-- `evals/` — fixed, reproducible repair and evaluation fixtures.
-- `bootstrap.py` — the **Composition Root**. It is the one outer-edge location that performs **Dependency Injection** by connecting concrete adapters to core ports.
-- `core/ports.py` — the **Ports and Adapters (Hexagonal Architecture)** contracts. Concrete adapters satisfy these contracts; the core depends only on the contracts.
-- `adapters/sandbox/runner.py` — the execution boundary. Generated project code runs only in its Docker runner, never directly on the host.
+- `evals/`: fixed, reproducible repair and evaluation fixtures.
+- `bootstrap.py`: the **Composition Root**. It performs **Dependency Injection** by connecting concrete adapters to core ports.
+- `core/ports.py`: the **Ports and Adapters (Hexagonal Architecture)** contracts. Concrete adapters satisfy these contracts; the core depends only on the contracts.
+- `adapters/sandbox/runner.py`: the execution boundary. Generated project code runs only in its Docker runner, never directly on the host.
 
 This follows the **Dependency Rule**: source-code dependencies point inward, from volatile technology details toward stable policy. [Martin’s Dependency Rule](https://www.informit.com/articles/article.aspx?p=2832399), [AWS on Hexagonal Architecture](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/hexagonal-architecture.html)
 
@@ -213,15 +213,15 @@ In this lab, `core/repair_agent.py` is the **harness controller**. Its responsib
 
 ### Program-repair rule: reproduce before repair
 
-A repair begins with evidence, not a plausible-looking code change. The supplied `evals/` fixtures are designed to fail reproducibly in the Docker runner. The system prompt therefore requires this sequence: inspect a test, run it to observe the failure, make a focused edit, then run the tests again. A passing post-edit result is the repair verdict. If the initial test run passes or cannot run, do not make a speculative change—keep the trace and report the unexpected baseline result to the instructor.
+A repair begins with evidence, not a plausible-looking code change. The supplied `evals/` fixtures are designed to fail reproducibly in the Docker runner. The system prompt therefore requires this sequence: inspect a test, run it to observe the failure, make a focused edit, then run the tests again. A passing post-edit result is the repair verdict. If the initial test run passes or cannot run, do not make a speculative change. Keep the trace and report the unexpected baseline result to the instructor.
 
 `core/prompts.py` keeps the model-facing conversation policy separate from loop control. It defines the `system`, `user`, and `assistant` role constants; the base system policy; the optional GitHub-research policy; the case request template; and the `TOOL_RESULT` formatter. `RepairAgent` imports these pieces rather than embedding long prompts.
 
 `core/ports.py` is the **harness boundary**: it defines what a model can ask for (`RepairToolsPort`), what a provider must supply (`ChatModelPort`), and the optional `TrajectoryObserverPort`. `adapters/sandbox/` is the **tool runtime**, and `evals/` supplies fixed tasks. This separation lets students replace Ollama with a cloud provider, replace the UI, record to Langfuse, or test with `ScriptedClient` without rewriting the harness.
 
-## State-of-practice patterns retained in this small lab
+## Relation to current coding-agent practice
 
-This is intentionally a teaching-sized harness, not a clone of a production coding-agent platform. It retains the engineering patterns that established repositories make visible:
+This is a teaching-sized harness, not a clone of a production coding-agent platform. It retains a small set of patterns visible in established repositories:
 
 - [Aider](https://github.com/Aider-AI/aider) uses repository context and verifies edits with linting and tests. This lab provides the selected fixture's file list, requires test inspection before editing, and makes `run_tests` the repair verdict.
 - [SWE-agent](https://github.com/SWE-agent/SWE-agent/blob/main/docs/usage/trajectories.md) persists model response, action, observation, state, and exact model input as a trajectory. This lab records the messages, model response, tool result, terminal result, and a short public action `summary`; Gradio and optional Langfuse expose that trajectory.
@@ -240,11 +240,11 @@ That choice is intentional:
 - Repairs are reproducible: the same fixture and test result do not depend on changing web pages or search rankings.
 - Evaluation is fair: every student agent receives the same evidence.
 - The attack surface is smaller: untrusted web content cannot steer the model, and generated code cannot exfiltrate data through a network tool.
-- Students can first observe the essential harness loop—context → model decision → bounded tool → observation—without a second, unrelated retrieval system.
+- Students can first observe the essential harness loop: context → model decision → bounded tool → observation. This avoids introducing a second, unrelated retrieval system.
 
 ## Optional GitHub research
 
-After the core lab, follow [Optional GitHub research — advanced extension](docs/github-research.md) to enable bounded, cited GitHub code-search evidence. It is disabled by default and never replaces local test verification.
+After the core lab, follow [Optional GitHub research: advanced extension](docs/github-research.md) to enable bounded, cited GitHub code-search evidence. It is disabled by default and never replaces local test verification.
 
 ## Tool capability levels
 
@@ -263,21 +263,21 @@ Examples:
 
 The runner rejects commands such as `python`, `pip`, `curl`, `sh`, and `rm`. This demonstrates an industry principle: give an agent the **least powerful capability that solves the task**, then expand it deliberately as repository complexity grows.
 
-## Exercises — complete in order
+## Exercises: complete in order
 
 Run each checkpoint from the repository root. Exercises 1 and 2 need no model provider or API key.
 
-1. [Exercise 1 — Safe tools (25 minutes)](docs/exercises/01-safe-tools.md) — implement the workspace-scoped read, edit, and test tools.
-2. [Exercise 2 — Agent loop (65 minutes)](docs/exercises/02-agent-loop.md) — implement the model-to-tool repair harness.
-3. [Exercise 3 — Gradio UI adapter (20 minutes)](docs/exercises/03-gradio-ui.md) — present the repair result in the provided interface.
+1. [Exercise 1: Safe tools (25 minutes)](docs/exercises/01-safe-tools.md): implement the workspace-scoped read, edit, and test tools.
+2. [Exercise 2: Agent loop (65 minutes)](docs/exercises/02-agent-loop.md): implement the model-to-tool repair harness.
+3. [Exercise 3: Gradio UI adapter (20 minutes)](docs/exercises/03-gradio-ui.md): present the repair result in the provided interface.
 
 ## Model provider for the live demonstration
 
-After Exercises 1 and 2 pass, follow [Model providers — choose one for the live demonstration](docs/model-providers.md). It covers local Ollama, Vertex AI Gemini, and the OpenAI API. No provider is needed for the deterministic checkpoints.
+After Exercises 1 and 2 pass, follow [Model providers: choose one for the live demonstration](docs/model-providers.md). It covers local Ollama, Vertex AI Gemini, and the OpenAI API. No provider is needed for the deterministic checkpoints.
 
 ## Optional observability extension
 
-After the core lab, follow [Optional Langfuse observability — trajectory analysis extension](docs/observability.md) to analyze repair trajectories across runs. It is not required for any exercise checkpoint.
+After the core lab, follow [Optional Langfuse observability: trajectory analysis extension](docs/observability.md) to analyze repair trajectories across runs. It is not required for any exercise checkpoint.
 
 ## Final demonstration
 
@@ -286,6 +286,6 @@ After the core lab, follow [Optional Langfuse observability — trajectory analy
 3. Point out the harness controls and explain why the model is not trusted with host shell execution.
 4. Show why `RepairAgent` can be tested with `ScriptedClient` and `RepairTools` without Gradio/Ollama.
 5. Run **arithmetic** through the CLI or Gradio UI with one configured provider (Ollama, Vertex, or OpenAI).
-6. Identify the security boundary: only `adapters/sandbox/runner.py` executes case code or the restricted inspection command, inside Docker—not on the host.
+6. Identify the security boundary: only `adapters/sandbox/runner.py` executes case code or the restricted inspection command, inside Docker and not on the host.
 7. Optional: enable GitHub research, show a cited `search_github` observation in the trace, and explain why the returned code is only a hypothesis until local tests pass.
 8. Optional: with approved Langfuse credentials, show the agent, generation, and tool observations for one repair; explain the external data boundary.

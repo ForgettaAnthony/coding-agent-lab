@@ -1,4 +1,4 @@
-# Model providers — choose one for the live demonstration
+# Model providers: choose one for the live demonstration
 
 [Back to the lab guide](../README.md)
 
@@ -6,7 +6,7 @@ No model provider is needed for Exercises 1 and 2. Their checkpoints use `Script
 
 The core depends on `ChatModelPort`, never on a specific vendor. `bootstrap.py` selects the concrete adapter using `MODEL_PROVIDER`.
 
-## Ollama — default local option
+## Ollama: default local option
 
 Use the default `qwen2.5-coder:7b` only when your computer has sufficient disk space and memory.
 
@@ -16,7 +16,7 @@ ollama pull qwen2.5-coder:7b
 MODEL_PROVIDER=ollama python main.py repair evals/arithmetic --model qwen2.5-coder:7b
 ```
 
-## Vertex AI Gemini — cloud option
+## Vertex AI Gemini: cloud option
 
 This option avoids a local model download.
 
@@ -30,7 +30,7 @@ MODEL_PROVIDER=vertex python main.py repair evals/arithmetic --model gemini-2.5-
 
 The Vertex adapter uses the Google Gen AI SDK and Application Default Credentials. It is optional, so no cloud package or credential is needed for the deterministic checkpoint. Never store API keys or service-account JSON in this repository. See [Google Gen AI SDK for Vertex AI](https://googleapis.github.io/python-genai/genai.html) and [Google Cloud authentication guidance](https://docs.cloud.google.com/docs/authentication).
 
-## OpenAI API — cloud option
+## OpenAI API: cloud option
 
 Use a model identifier available to your API project, such as a low-cost Nano model when enabled.
 

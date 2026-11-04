@@ -1,4 +1,4 @@
-# Exercise 3 — Gradio UI adapter (20 minutes)
+# Exercise 3: Gradio UI adapter (20 minutes)
 
 [Back to the lab guide](../../README.md)
 

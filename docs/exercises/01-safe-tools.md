@@ -1,4 +1,4 @@
-# Exercise 1 — Safe tools (25 minutes)
+# Exercise 1: Safe tools (25 minutes)
 
 [Back to the lab guide](../../README.md)
 

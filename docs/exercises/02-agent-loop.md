@@ -1,4 +1,4 @@
-# Exercise 2 — Agent loop (65 minutes)
+# Exercise 2: Agent loop (65 minutes)
 
 [Back to the lab guide](../../README.md)
 

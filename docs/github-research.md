@@ -1,4 +1,4 @@
-# Optional GitHub research — advanced extension
+# Optional GitHub research: advanced extension
 
 [Back to the lab guide](../README.md)
 
@@ -34,8 +34,8 @@ The model must still inspect the local project and use `run_tests`; Internet mat
 
 ## Token and privacy rules
 
-GitHub code search has its own authentication and rate limits, so this lab requires `GITHUB_TOKEN` when research is enabled. Keep the token in an environment variable—not in the repository or model prompt. [GitHub Search API documentation](https://docs.github.com/en/rest/search/search#search-code)
+GitHub code search has its own authentication and rate limits, so this lab requires `GITHUB_TOKEN` when research is enabled. Keep the token in an environment variable, not in the repository or model prompt. [GitHub Search API documentation](https://docs.github.com/en/rest/search/search#search-code)
 
 Do not enable this option for a repository containing credentials, personal data, proprietary code, or other confidential material. The adapter itself cannot read project files, but an LLM that has read project context could place information into a research query. The supplied evaluation fixtures are safe for the demonstration.
 
-For any repair, state the policy explicitly: **offline fixture evidence is sufficient**, or **external, cited documentation is needed**. The harness—not the model—enforces that policy.
+For any repair, state the policy explicitly: **offline fixture evidence is sufficient**, or **external, cited documentation is needed**. The harness, not the model, enforces that policy.

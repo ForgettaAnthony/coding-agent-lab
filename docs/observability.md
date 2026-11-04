@@ -1,4 +1,4 @@
-# Optional Langfuse observability — trajectory analysis extension
+# Optional Langfuse observability: trajectory analysis extension
 
 [Back to the lab guide](../README.md)
 
