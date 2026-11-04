@@ -282,24 +282,9 @@ Run each checkpoint from the repository root. Exercises 1 and 2 need no model pr
 
 After Exercises 1 and 2 pass, follow [Model providers — choose one for the live demonstration](docs/model-providers.md). It covers local Ollama, Vertex AI Gemini, and the OpenAI API. No provider is needed for the deterministic checkpoints.
 
-## Optional Langfuse observability — trajectory analysis extension
+## Optional observability extension
 
-The local `RepairResult.trace` is the basic trajectory visible in the CLI and Gradio UI. Langfuse is an optional, external **observability adapter** for analyzing the same repair trajectory across runs. It does not replace `adapters/gradio_ui.py`: Gradio presents one run to a student, while Langfuse records runs for later inspection.
-
-Install it only if you want this extension. The current Langfuse Python SDK requires Python 3.11+.
-
-```bash
-pip install -r requirements-langfuse.txt
-export LANGFUSE_PUBLIC_KEY="pk-lf-..."
-export LANGFUSE_SECRET_KEY="sk-lf-..."
-python main.py repair evals/arithmetic --langfuse
-```
-
-For Gradio, set `ENABLE_LANGFUSE=true` in the terminal before `python main.py ui`. Set `LANGFUSE_BASE_URL` only when using a non-default Langfuse region or self-hosted instance.
-
-`bootstrap.py` injects `LangfuseTrajectoryObserver` only when this option is enabled. The harness emits four generic events: `repair_started`, `model_response`, `tool_result`, and `repair_finished`. `adapters/observability/langfuse.py` converts them into one Langfuse agent observation with generation and tool children. It is a best-effort observer: a telemetry failure is logged and never changes the repair decision or test result. [Langfuse Python observability documentation](https://langfuse.com/docs/observability/sdk/overview)
-
-**Data boundary:** a Langfuse trajectory can include prompts, model JSON, file contents returned by `read_file`, edit content, and test output. Do not enable it for confidential projects, credentials, personal data, or proprietary code unless your institution has approved the Langfuse deployment and retention policy. The supplied evaluation fixtures are safe examples.
+After the core lab, follow [Optional Langfuse observability — trajectory analysis extension](docs/observability.md) to analyze repair trajectories across runs. It is not required for any exercise checkpoint.
 
 ## Final demonstration
 
