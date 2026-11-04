@@ -270,73 +270,13 @@ Examples:
 
 The runner rejects commands such as `python`, `pip`, `curl`, `sh`, and `rm`. This demonstrates an industry principle: give an agent the **least powerful capability that solves the task**, then expand it deliberately as repository complexity grows.
 
-## Exercise 1 — safe tools (25 minutes)
+## Exercises — complete in order
 
-Modify only `adapters/sandbox/repair_tools.py`:
+Run each checkpoint from the repository root. Exercises 1 and 2 need no model provider or API key.
 
-1. `read_file(path)` must resolve through `safe_path` and return UTF-8 text.
-2. `edit_file(path, content)` must resolve safely, write content, and record each changed relative path once.
-3. `run_tests()` must delegate to `run_pytest(self.workspace)`. Never add a host shell or host-Python execution tool. `run_command()` is already supplied as a constrained Docker inspection capability; do not broaden its allowlist in this lab.
-
-```bash
-pytest -q tests/test_tools.py
-```
-
-Expected result: **4 passed**.
-
-## Exercise 2 — agent loop (65 minutes)
-
-Modify only `core/repair_agent.py`. Read, but do not modify, `core/prompts.py`; it supplies the role names and prompt templates:
-
-1. Use `build_system_prompt`, `build_case_request`, `SYSTEM_ROLE`, and `USER_ROLE` to build the initial system and user messages. Include the selected case and supplied project file list so the LLM does not invent paths.
-2. Call `self.client.chat(messages)` and parse one JSON response.
-3. Preserve an action's optional `summary` in the visible trace. It is a brief public action plan, such as “Read the failing test first,” not hidden reasoning; it never expands tool authority.
-4. Follow the evidence sequence in the supplied prompt: inspect a test, reproduce its failure with `run_tests`, make a focused edit, and verify it with `run_tests`. Dispatch only `read_file`, `edit_file`, `run_tests`, the supplied restricted `run_command`, and opt-in `search_github` on the injected `tools` object.
-5. Append the response using `ASSISTANT_ROLE`, then a `USER_ROLE` message built with `build_tool_result(observation)` after every tool action.
-6. Reject `search_github` with a visible tool error until a `read_file` action succeeds; do not rely on the prompt alone for this policy.
-7. Emit `repair_started`, `model_response`, and `tool_result` through the supplied `self._record(...)` helper. Return every terminal `RepairResult` through `self._finish(...)`. This records a trajectory when an observer is configured, but `RepairAgent` must never import Langfuse.
-8. Continue until a passing test result, malformed model response, or `max_steps` is reached. Return `RepairResult` in every outcome.
-
-As you implement it, identify the harness controls: **context**, **state**, **capability boundary**, **observation loop**, **traceability**, and **termination policy**.
-
-The deterministic checkpoint returns bare JSON. A real model may still surround its JSON with one outer Markdown code fence despite the prompt; accept that fence before calling `json.loads`, but do not attempt to extract JSON from arbitrary prose.
-
-Valid model responses are:
-
-```json
-{"summary":"Read the failing test first","tool":"read_file","path":"test_calculator.py"}
-{"tool":"edit_file","path":"calculator.py","content":"def add(a, b):\n    return a + b\n"}
-{"tool":"run_tests"}
-{"tool":"run_command","command":"find . -maxdepth 2 -type f"}
-{"tool":"search_github","query":"normalize_name language:Python"}
-```
-
-One tool cycle should look like this:
-
-```text
-Model:   {"summary":"Read the failing test first","tool":"read_file","path":"test_calculator.py"}
-Harness: TOOL_RESULT
-         from calculator import add
-         ...
-Model:   {"summary":"Reproduce the reported failure","tool":"run_tests"}
-Harness: TOOL_RESULT
-         {"passed": false, "output": "1 failed ...", "returncode": 1}
-Model:   {"tool":"edit_file","path":"calculator.py","content":"..."}
-Harness: TOOL_RESULT
-         Wrote calculator.py
-Model:   {"tool":"run_tests"}
-Harness: TOOL_RESULT
-         {"passed": true, "output": "2 passed ...", "returncode": 0}
-```
-
-Run the deterministic checkpoint (no Ollama call):
-
-```bash
-pytest -q tests/test_agent.py
-pytest -q
-```
-
-Expected results: **5 passed**, then **14 passed**. `ScriptedClient` proves the agent loop without model non-determinism or generated-code execution on the host. `test_github_research.py`, `test_langfuse_observability.py`, and `test_project_selection.py` use fakes or workspace copies, so the checkpoint never needs a token, Langfuse account, or Internet access.
+1. [Exercise 1 — Safe tools (25 minutes)](docs/exercises/01-safe-tools.md) — implement the workspace-scoped read, edit, and test tools.
+2. [Exercise 2 — Agent loop (65 minutes)](docs/exercises/02-agent-loop.md) — implement the model-to-tool repair harness.
+3. [Exercise 3 — Gradio UI adapter (20 minutes)](docs/exercises/03-gradio-ui.md) — present the repair result in the provided interface.
 
 ## Model providers — choose one for the live demonstration
 
@@ -390,17 +330,6 @@ For Gradio, set `ENABLE_LANGFUSE=true` in the terminal before `python main.py ui
 `bootstrap.py` injects `LangfuseTrajectoryObserver` only when this option is enabled. The harness emits four generic events: `repair_started`, `model_response`, `tool_result`, and `repair_finished`. `adapters/observability/langfuse.py` converts them into one Langfuse agent observation with generation and tool children. It is a best-effort observer: a telemetry failure is logged and never changes the repair decision or test result. [Langfuse Python observability documentation](https://langfuse.com/docs/observability/sdk/overview)
 
 **Data boundary:** a Langfuse trajectory can include prompts, model JSON, file contents returned by `read_file`, edit content, and test output. Do not enable it for confidential projects, credentials, personal data, or proprietary code unless your institution has approved the Langfuse deployment and retention policy. The supplied evaluation fixtures are safe examples.
-
-## Exercise 3 — UI adapter (20 minutes)
-
-Modify only `adapters/gradio_ui.py`, function `repair(project_path)`. Call `build_repair_service().repair(project_path)`; return trace text, changed-code text, test output, and a ZIP of `result.workspace`.
-
-```bash
-python main.py ui
-python main.py repair evals/arithmetic
-```
-
-The CLI and UI must not create Docker commands, build prompts, or dispatch tools. Those are owned by lower layers.
 
 ## Final demonstration
 
