@@ -98,6 +98,37 @@ The first test run should fail with clear `NotImplementedError` messages from th
 
 The GitHub-research and Langfuse sections are optional extensions; skip them on the first pass through the lab.
 
+## Repository guide
+
+The tree below lists the files students need to recognize. `TODO` marks the three files that students modify during the required path.
+
+```text
+coding-agent-lab/
+├── main.py                         # application entry point
+├── bootstrap.py                    # composition root and dependency injection
+├── core/                           # repair policy, prompts, models, and ports
+│   ├── repair_agent.py             # TODO: Exercise 2, agent loop
+│   ├── repair_service.py           # repair use case
+│   ├── prompts.py                  # model-facing messages
+│   ├── models.py                   # repair result data
+│   └── ports.py                    # interfaces used by the core
+├── adapters/                       # concrete technology integrations
+│   ├── gradio_ui.py                # TODO: Exercise 3, UI adapter
+│   ├── models/                     # Ollama, OpenAI, and Vertex adapters
+│   ├── sandbox/
+│   │   ├── repair_tools.py          # TODO: Exercise 1, safe tools
+│   │   ├── runner.py                # Docker-only test and inspection runner
+│   │   └── Dockerfile
+│   ├── research/                   # optional GitHub research adapter
+│   └── observability/              # optional Langfuse adapter
+├── evals/                          # fixed buggy projects and their tests
+│   ├── arithmetic/
+│   └── multi_function/
+├── tests/                          # public exercise checkpoints
+├── docs/                           # exercise handouts and optional guides
+└── requirements*.txt               # base and optional dependency sets
+```
+
 ## Architecture map
 
 | Clean Architecture ring | Lab package | Responsibility |
