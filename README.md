@@ -219,7 +219,7 @@ The lab asks the model for JSON so students can see parsing and tool dispatch di
 
 ## Internet access is a deliberate tool-policy decision
 
-This lab is **offline by default**. The agent may inspect only the selected evaluation fixture and run its supplied tests. It has no web-search, browser, host-shell, package-installation, or arbitrary-upload tool unless an instructor or student explicitly enables the optional GitHub-research extension below.
+This lab is **offline by default**. The agent may inspect only the selected evaluation fixture and run its supplied tests. It has no web-search, browser, host-shell, package-installation, or arbitrary-upload tool unless an instructor or student explicitly enables the optional [GitHub-research extension](docs/github-research.md).
 
 That choice is intentional:
 
@@ -228,30 +228,9 @@ That choice is intentional:
 - The attack surface is smaller: untrusted web content cannot steer the model, and generated code cannot exfiltrate data through a network tool.
 - Students can first observe the essential harness loop—context → model decision → bounded tool → observation—without a second, unrelated retrieval system.
 
-## Optional GitHub research — advanced extension
+## Optional GitHub research
 
-This repository includes one concrete research integration so students can study how a coding agent is given Internet evidence. It is deliberately **off by default**. When enabled, `adapters/research/github_research.py` calls only GitHub's code-search API; it is not a browser and it cannot fetch arbitrary URLs.
-
-```bash
-export GITHUB_TOKEN="your-fine-grained-token"
-python main.py repair evals/multi_function --research
-```
-
-For the Gradio interface, set `ENABLE_GITHUB_RESEARCH=true` in the same terminal before running `python main.py ui`.
-
-`--research` creates the adapter in `bootstrap.py`, sets `research_enabled=True` on the harness, and gives the model one extra request shape:
-
-```json
-{"tool":"search_github","query":"normalize_name language:Python"}
-```
-
-The adapter permits at most three requests per repair, three results per request, a one-line query of at most 180 characters, and a single trusted API domain (`api.github.com`). The harness rejects `search_github` until the model has successfully called `read_file` on a local file. Its `TOOL_RESULT` contains visible provenance: repository, path, GitHub URL, short matching snippet, retrieval time, and whether GitHub marked the response incomplete. The model must still inspect the local project and use `run_tests`; Internet material is an untrusted hint, not a repair verdict.
-
-GitHub code search uses its own authentication and rate limits, so this lab requires `GITHUB_TOKEN` when research is enabled. Keep the token in an environment variable—not the repository or model prompt. [GitHub Search API documentation](https://docs.github.com/en/rest/search/search#search-code)
-
-**Privacy rule:** do not enable this option for a repository containing credentials, personal data, proprietary code, or other confidential material. The adapter itself cannot read project files, but an LLM that has read project context could place information into a research query. This lab's instructor-provided fixtures are safe for the demonstration.
-
-For any repair, students should be able to state the policy: **offline fixture evidence is sufficient**, or **external, cited documentation is needed**. The harness—not the model—enforces that policy.
+After the core lab, follow [Optional GitHub research — advanced extension](docs/github-research.md) to enable bounded, cited GitHub code-search evidence. It is disabled by default and never replaces local test verification.
 
 ## Tool capability levels
 
