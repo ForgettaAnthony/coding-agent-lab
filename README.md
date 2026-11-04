@@ -10,13 +10,13 @@ In this lab, you will build a Python repair agent. It receives a small buggy Pyt
 
 **Why use an agent?** A one-shot LLM answer cannot inspect the actual project, apply a change, or prove that the change works. An agent creates a bounded loop: it observes the project, chooses an approved action, receives the result, and keeps working until tests verify the repair or its budget ends.
 
+## Clean Architecture of the Repair Agent
+
 The focus is not only the LLM. It is the surrounding **agent harness**: prompts, bounded tools, a sandbox, stopping rules, and a user interface. To organize this AI system with Software Engineering for AI (**SE4AI**) practices, the lab uses Robert C. Martin's **Clean Architecture** and its **Dependency Rule**: source-code dependencies point inward, from changing technology details toward stable policy.
 
 In plain language, the repair rules live in `core/` and should not depend on a particular UI, model provider, or Docker command. The core describes the small operations it needs using Python `Protocol` interfaces, called **ports**. Code in `adapters/` supplies the concrete implementations. Examples include an Ollama client, the Docker test runner, and the Gradio UI.
 
 **Why this matters for Software Engineering for AI:** LLM output is probabilistic, providers and prompts evolve, and external services fail. The harness must therefore enforce workspace boundaries, test execution, traceability, and stopping rules in deterministic code. Separating these responsibilities lets us replace Ollama with a cloud model, test the loop with `ScriptedClient`, or change Gradio without rewriting the repair policy. You do not need to memorize the architecture terms before starting the exercises. Use them as a map for deciding where a responsibility belongs. For optional background, read [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
-
-## Clean Architecture of the Repair Agent
 
 ```mermaid
 flowchart LR
