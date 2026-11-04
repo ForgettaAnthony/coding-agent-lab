@@ -1,4 +1,4 @@
-# Build Your Own Python Repair Agent
+<h1 align="center">Build Your Own Python Repair Agent</h1>
 
 <p align="center">
   <img src="docs/assets/python-repair-agent-icon.png" width="180" alt="A repair agent fixes a code bug and verifies the repair">
