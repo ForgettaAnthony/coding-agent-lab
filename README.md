@@ -38,7 +38,21 @@ flowchart LR
     class cli,ui,service,models,runtime outer
 ```
 
-`core/` contains the **Entities**, **Use Cases**, and policy-owned **Ports**; `adapters/` contains **Interface Adapters** plus **Frameworks & Drivers**; `evals/` contains reproducible repair/evaluation fixtures. Within `adapters/`, `models/ollama.py` owns the model integration, `research/github_research.py` is an optional external-research adapter, `observability/langfuse.py` is an optional trajectory recorder, and `sandbox/` owns the disposable project workspace and Docker isolation; the single `gradio_ui.py` remains at the adapter root. `bootstrap.py` is the **Composition Root**—the one deliberate outer-edge location that performs **Dependency Injection**. The agent never imports Gradio, Docker, an Ollama HTTP library, GitHub HTTP library, or Langfuse SDK. Generated project code runs only through `adapters/sandbox/runner.py` in Docker. This is also **Ports and Adapters (Hexagonal Architecture)**: `core/ports.py` defines contracts, while concrete adapters satisfy them. [Martin’s Dependency Rule](https://www.informit.com/articles/article.aspx?p=2832399), [AWS on Hexagonal Architecture](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/hexagonal-architecture.html)
+### How the layers map to this repository
+
+- `core/` — **Entities**, **Use Cases**, and policy-owned **Ports**. It contains the repair policy and does not import user interfaces, Docker, model SDKs, GitHub, or Langfuse.
+- `adapters/` — **Interface Adapters** plus **Frameworks & Drivers**. It translates the core's ports to concrete technologies.
+  - `models/ollama.py` owns the Ollama integration; the OpenAI and Vertex adapters follow the same boundary.
+  - `research/github_research.py` is the optional external-research adapter.
+  - `observability/langfuse.py` is the optional trajectory-recorder adapter.
+  - `sandbox/` owns the disposable workspace and Docker isolation.
+  - `gradio_ui.py` remains a small presentation adapter at the package root.
+- `evals/` — fixed, reproducible repair and evaluation fixtures.
+- `bootstrap.py` — the **Composition Root**. It is the one outer-edge location that performs **Dependency Injection** by connecting concrete adapters to core ports.
+- `core/ports.py` — the **Ports and Adapters (Hexagonal Architecture)** contracts. Concrete adapters satisfy these contracts; the core depends only on the contracts.
+- `adapters/sandbox/runner.py` — the execution boundary. Generated project code runs only in its Docker runner, never directly on the host.
+
+This follows the **Dependency Rule**: source-code dependencies point inward, from volatile technology details toward stable policy. [Martin’s Dependency Rule](https://www.informit.com/articles/article.aspx?p=2832399), [AWS on Hexagonal Architecture](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/hexagonal-architecture.html)
 
 ## Setup
 
@@ -98,11 +112,11 @@ For every repair, the harness copies the selected project into a new disposable 
 
 ```mermaid
 flowchart LR
-    baseline["`evals/arithmetic`\nimmutable instructor baseline"]
-    copy["`create_workspace(...)`\nnew temporary project copy"]
-    agent["RepairAgent + repair tools\nmay read and edit only the copy"]
-    docker["Docker test runner\nread-only mount of the copy\nnetwork disabled + resource limits"]
-    result["Repair evidence\ntrace + changed files + test result"]
+    baseline["evals/arithmetic<br/>immutable instructor baseline"]
+    copy["create_workspace(...)<br/>new temporary project copy"]
+    agent["RepairAgent + repair tools<br/>may read and edit only the copy"]
+    docker["Docker test runner<br/>read-only mount of the copy<br/>network disabled + resource limits"]
+    result["Repair evidence<br/>trace + changed files + test result"]
 
     baseline -->|copy, never edit| copy
     copy --> agent
