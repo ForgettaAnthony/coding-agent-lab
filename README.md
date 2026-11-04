@@ -1,5 +1,9 @@
 # Build Your Own Python Repair Agent
 
+<p align="center">
+  <img src="docs/assets/python-repair-agent-icon.png" width="180" alt="A repair agent fixes a code bug and verifies the repair">
+</p>
+
 Build a coding agent that reads a small Python project, edits it, and verifies the repair with sandboxed tests. This lab uses Robert C. Martin's **Clean Architecture** vocabulary and its **Dependency Rule**: source-code dependencies point inward, never from policy to volatile details. The outer layers are concrete **Adapters**; the inner layers own **Ports** (Python `Protocol`s).
 
 ```mermaid
