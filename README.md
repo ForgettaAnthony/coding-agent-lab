@@ -78,7 +78,7 @@ The first test run should fail with clear `NotImplementedError` messages from th
 1. Complete Exercise 1 and its tool checkpoint.
 2. Complete Exercise 2 and its deterministic agent-loop checkpoint.
 3. Complete Exercise 3 and launch the UI.
-4. After the checkpoints pass, choose one model provider for the live final demonstration.
+4. After the checkpoints pass, choose one [model provider for the live final demonstration](docs/model-providers.md).
 
 The GitHub-research and Langfuse sections are optional extensions; skip them on the first pass through the lab.
 
@@ -278,39 +278,9 @@ Run each checkpoint from the repository root. Exercises 1 and 2 need no model pr
 2. [Exercise 2 — Agent loop (65 minutes)](docs/exercises/02-agent-loop.md) — implement the model-to-tool repair harness.
 3. [Exercise 3 — Gradio UI adapter (20 minutes)](docs/exercises/03-gradio-ui.md) — present the repair result in the provided interface.
 
-## Model providers — choose one for the live demonstration
+## Model provider for the live demonstration
 
-No model provider is needed for Exercises 1 and 2. After their checkpoints pass, choose one provider for the live repair demonstration. `core/` depends on the `ChatModelPort`, never on a specific LLM vendor. `bootstrap.py` is the provider **factory/composition root**: it selects an outer adapter using `MODEL_PROVIDER`.
-
-Default local Ollama:
-
-```bash
-ollama pull qwen2.5-coder:7b
-# In a separate terminal: ollama serve
-MODEL_PROVIDER=ollama python main.py repair evals/arithmetic --model qwen2.5-coder:7b
-```
-
-Optional Vertex AI Gemini (no local model download):
-
-```bash
-pip install -r requirements-vertex.txt
-gcloud auth application-default login
-export GOOGLE_CLOUD_PROJECT="your-project-id"
-export GOOGLE_CLOUD_LOCATION="us-central1"
-MODEL_PROVIDER=vertex python main.py repair evals/arithmetic --model gemini-2.5-flash
-```
-
-The Vertex adapter uses the current Google Gen AI SDK and Application Default Credentials; it is optional so no cloud package or credential is required for the deterministic checkpoint. Never put API keys or service-account JSON in this repository. See [Google Gen AI SDK for Vertex AI](https://googleapis.github.io/python-genai/genai.html) and [Google Cloud authentication guidance](https://docs.cloud.google.com/docs/authentication).
-
-Optional OpenAI API (for example, a low-cost Nano model if enabled for your project):
-
-```bash
-pip install -r requirements-openai.txt
-export OPENAI_API_KEY="your-key"
-MODEL_PROVIDER=openai python main.py repair evals/arithmetic --model gpt-5-nano
-```
-
-The OpenAI adapter uses the Responses API and returns its text output through the same `ChatModelPort`; no OpenAI dependency is installed by default. Choose only a model identifier available to your API project. [OpenAI’s current model guide](https://developers.openai.com/api/docs/guides/latest-model.md) recommends selecting a model based on the required quality, speed, and cost.
+After Exercises 1 and 2 pass, follow [Model providers — choose one for the live demonstration](docs/model-providers.md). It covers local Ollama, Vertex AI Gemini, and the OpenAI API. No provider is needed for the deterministic checkpoints.
 
 ## Optional Langfuse observability — trajectory analysis extension
 
