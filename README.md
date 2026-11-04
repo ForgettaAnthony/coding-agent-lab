@@ -12,7 +12,7 @@ In this lab, you will build a Python repair agent. It receives a small buggy Pyt
 
 ## Repository guide
 
-Start with the project structure. The tree below lists the files students need to recognize. `TODO` marks the three files that students modify during the required path.
+This repository tree provides an overview of the files used in the lab. `TODO` marks the three files students modify during the required path.
 
 ```text
 coding-agent-lab/
