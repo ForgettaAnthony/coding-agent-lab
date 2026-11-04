@@ -6,7 +6,9 @@
 
 In this lab, you will build a Python repair agent. It receives a small buggy Python project and its tests; it must inspect the code, reproduce the failure, make a focused repair, and run the tests safely. Its output is a visible execution trace, the modified project files, and a final test result.
 
-The goal is not only to use an LLM, but to engineer the surrounding **agent harness**: prompts, bounded tools, a sandbox, stopping rules, and a user interface. To organize that AI system using Software Engineering for AI (**SE4AI**) practices, the lab follows Robert C. Martin's **Clean Architecture** and its **Dependency Rule**: source-code dependencies point inward, from volatile technology details toward stable policy. The outer layers are concrete **Adapters**; the inner layers own **Ports** (Python `Protocol`s).
+The goal is not only to use an LLM, but to engineer the surrounding **agent harness**: prompts, bounded tools, a sandbox, stopping rules, and a user interface. To organize that AI system using Software Engineering for AI (**SE4AI**) practices, the lab follows Robert C. Martin's **Clean Architecture** and its **Dependency Rule**: source-code dependencies point inward, from volatile technology details toward stable policy.
+
+In plain language: the repair rules live in `core/` and should not depend on a particular UI, model provider, or Docker command. The core describes the small operations it needs using Python `Protocol` interfaces, called **ports**. Code in `adapters/` supplies the real implementations, called **adapters**—for example, an Ollama client, the Docker test runner, or the Gradio UI. You do not need to memorize these terms before starting the exercises; use them as a map for where each responsibility belongs. For optional background, read [The Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 
 ```mermaid
 flowchart LR
