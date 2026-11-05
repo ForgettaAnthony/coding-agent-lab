@@ -30,8 +30,12 @@ Implement the three TODO methods in RepairTools:
 3. run_tests() must return run_pytest(self.workspace).
 
 Do not add subprocess calls, a host shell, host-Python execution, new tools, or
-changes to runner.py or the tests. Keep run_command unchanged. Run
-pytest -q tests/test_tools.py when finished.
+changes to runner.py or the tests. Keep run_command unchanged.
+
+Verification is part of the task: run pytest -q tests/test_tools.py yourself.
+Do not report completion until it shows 4 passed. If it fails, fix only
+adapters/sandbox/repair_tools.py and run the same checkpoint again. Report the
+actual final command result.
 ```
 
 ## Checkpoint

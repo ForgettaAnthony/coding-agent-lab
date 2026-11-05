@@ -37,6 +37,15 @@ in this order:
 Do not modify create_demo, add Docker commands, build prompts, dispatch tools,
 or change any tests or other files. Reuse the imports already provided in this
 file.
+
+Verification is part of the task:
+1. Run pytest -q and report the result.
+2. Build the interface without starting a server:
+   python -c "from adapters.gradio_ui import create_demo; create_demo(); print('Gradio UI built')"
+3. If Docker and one model provider are configured, launch python main.py ui,
+   run arithmetic, and report whether the trace, changed code, test output, and
+   ZIP are visible. If that live check cannot run, state the missing dependency
+   instead of claiming that it passed.
 ```
 
 ## Checkpoint

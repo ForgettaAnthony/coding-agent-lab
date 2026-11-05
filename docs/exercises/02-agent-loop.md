@@ -62,6 +62,11 @@ Requirements:
 
 Do not import Langfuse, change the observer implementation, add tools, or
 modify tests or other files.
+
+Verification is part of the task: run pytest -q tests/test_agent.py, then run
+pytest -q. Do not report completion until the results are 6 passed and then 27
+passed. If a checkpoint fails, fix only core/repair_agent.py and rerun it.
+Report the actual final command results.
 ```
 
 This is the **agent harness** responsibility: the model proposes actions, while deterministic Python code records what happened, limits capabilities, and decides when the repair stops.
