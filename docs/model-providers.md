@@ -2,7 +2,7 @@
 
 [Back to the lab guide](../README.md)
 
-No model provider is needed for Exercises 1 and 2. Their checkpoints use `ScriptedClient`. You may configure one during README setup, or wait until those checkpoints pass; a provider is required only for the live repair demonstration.
+No model provider is needed for Exercises 1 and 2. Their checkpoints use `ScriptedClient`. You may configure one during [setup](setup.md), or wait until those checkpoints pass; a provider is required only for the live repair demonstration.
 
 The core depends on `ChatModelPort`, never on a specific vendor. `bootstrap.py` selects the concrete adapter using `MODEL_PROVIDER`.
 
