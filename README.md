@@ -180,58 +180,30 @@ The **copy** preserves a reproducible baseline: every repair begins from the sam
 
 An **agent harness** is the software surrounding an LLM that turns a single text-generation call into a bounded, observable workflow. The model supplies decisions; the harness owns the engineering controls.
 
-Follow the diagram from top to bottom. Solid arrows are the repair workflow; dotted arrows are trace events. GitHub renders this Mermaid diagram directly in the README.
+Read the diagram from left to right. The middle steps repeat until the tests pass or the agent reaches its fixed step budget. GitHub renders this Mermaid diagram directly in the README.
 
 ```mermaid
-flowchart TD
-    start([Start the lab]) --> setup[Create venv and build Docker runner]
-    setup --> baseline[Run baseline checkpoints]
-    baseline --> tools[Exercise 1: implement safe tools]
-    tools --> tools_check{Tool tests pass?}
-    tools_check -- no --> tools
-    tools_check -- yes --> agent[Exercise 2: implement RepairAgent]
+flowchart LR
+    task["(1) Give the agent<br/>a project and repair rules"]
+    model["(2) Model requests<br/>one action"]
+    check["(3) Harness checks<br/>the request"]
+    tool["(4) Safe tool runs<br/>read · edit · test"]
+    evidence["(5) Return evidence<br/>to the model"]
+    stop{"Tests pass or<br/>step budget ends?"}
+    result["(6) Show the result<br/>trace + changed code + tests"]
 
-    subgraph harness[Bounded repair harness]
-        case[Choose evals project folder] --> context[System policy and user task]
-        context --> model[ChatModelPort: Ollama, Vertex, or OpenAI]
-        model --> action[Model JSON: summary plus one tool request]
-        action --> dispatch{Harness policy gate}
-        dispatch -- read, edit, inspect --> workspace[Safe workspace tools]
-        dispatch -- run tests --> pytest[Docker pytest]
-        dispatch -- GitHub research --> research[Opt-in research gate]
-        dispatch -- unsupported --> rejected[Visible tool error]
-        workspace --> observation[TOOL_RESULT and visible trace]
-        research --> observation
-        rejected --> observation
-        pytest --> passed{Tests pass?}
-        passed -- no --> observation
-        observation --> budget{Step budget left?}
-        budget -- yes --> model
-        budget -- no --> unfinished[RepairResult: budget exhausted]
-        passed -- yes --> repaired[RepairResult: tests passed]
-    end
+    task --> model --> check --> tool --> evidence --> stop
+    stop -- keep repairing --> model
+    stop -- stop --> result
 
-    agent --> case
-    model -. model response .-> trace[TrajectoryObserverPort]
-    observation -. tool result .-> trace
-    repaired -. final result .-> trace
-    unfinished -. final result .-> trace
-    trace --> langfuse[Optional Langfuse]
-
-    repaired --> ui[Exercise 3: connect Gradio UI]
-    unfinished --> ui
-    ui --> demo([Final demonstration])
-
-    classDef student fill:#ddf4ff,stroke:#0969da,color:#24292f
-    classDef harnessNode fill:#f6f8fa,stroke:#57606a,color:#24292f
+    classDef input fill:#ddf4ff,stroke:#0969da,color:#24292f
+    classDef loop fill:#f6f8fa,stroke:#57606a,color:#24292f
     classDef decision fill:#fff8c5,stroke:#9a6700,color:#24292f
-    classDef result fill:#dafbe1,stroke:#1a7f37,color:#24292f
-    classDef optional fill:#fbefff,stroke:#8250df,color:#24292f
-    class start,setup,baseline,tools,agent,ui,demo student
-    class case,context,model,action,dispatch,workspace,pytest,research,rejected,observation,budget harnessNode
-    class tools_check,passed decision
-    class repaired,unfinished result
-    class trace,langfuse optional
+    classDef outcome fill:#dafbe1,stroke:#1a7f37,color:#24292f
+    class task input
+    class model,check,tool,evidence loop
+    class stop decision
+    class result outcome
 ```
 
 In this lab, `core/repair_agent.py` is the **harness controller**. Its responsibilities are to construct the task context, maintain conversation state, parse model requests, dispatch only approved tools, record a trace, return observations to the model, and stop on passing tests or a fixed budget. The LLM adapter never gains shell access or direct access to the host project.
