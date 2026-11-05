@@ -32,7 +32,7 @@ coding-agent-lab/
 │   │   ├── runner.py                # Docker-only test and inspection runner
 │   │   └── Dockerfile
 │   ├── research/                   # optional GitHub research adapter
-│   └── observability/              # optional Langfuse adapter
+│   └── observability/              # live terminal trace and optional Langfuse adapter
 ├── evals/                          # fixed buggy projects and their tests
 │   ├── arithmetic/
 │   └── multi_function/
@@ -93,7 +93,7 @@ flowchart LR
 - `adapters/`: **Interface Adapters** plus **Frameworks & Drivers**. It translates the core's ports to concrete technologies.
   - `models/ollama.py` owns the Ollama integration; the OpenAI and Vertex adapters follow the same boundary.
   - `research/github_research.py` is the optional external-research adapter.
-  - `observability/langfuse.py` is the optional trajectory-recorder adapter.
+  - `observability/terminal.py` prints the live CLI trajectory; `observability/langfuse.py` is the optional trajectory-recorder adapter.
   - `sandbox/` owns the disposable workspace and Docker isolation.
   - `gradio_ui.py` remains a small presentation adapter at the package root.
 - `evals/`: fixed, reproducible repair and evaluation fixtures.
@@ -125,7 +125,7 @@ The GitHub-research and Langfuse sections are optional extensions; skip them on 
 | Interface Adapters | `main.py`, `adapters/gradio_ui.py`, `adapters/sandbox/repair_tools.py` | Terminal/Gradio translation and the safe repair-tool adapter. |
 | Use Cases | `core/repair_service.py` | The `RepairService` repair use case. |
 | Entities / policy | `core/models.py`, `core/prompts.py`, `core/repair_agent.py`, `core/ports.py` | `RepairResult`, model-facing prompt policy, agent-loop policy, and ports. |
-| Frameworks & Drivers | `adapters/models/ollama.py`, `adapters/research/github_research.py`, `adapters/observability/langfuse.py`, `adapters/sandbox/runner.py` | Model/GitHub/Langfuse integration, filesystem, and restricted Docker execution. |
+| Frameworks & Drivers | `adapters/models/ollama.py`, `adapters/research/github_research.py`, `adapters/observability/`, `adapters/sandbox/runner.py` | Model, GitHub, terminal/Langfuse observability, filesystem, and restricted Docker execution. |
 | Composition Root | `bootstrap.py` | Wires concrete adapters to ports using dependency injection. |
 
 ## One entry point
@@ -138,6 +138,8 @@ python main.py repair evals/arithmetic --provider ollama --model qwen2.5-coder:7
 python main.py repair evals/arithmetic --provider ollama --model qwen2.5-coder:7b --temperature 0.0
 python main.py ui
 ```
+
+The `repair` command prints the trajectory live: repair start, each JSON model response, each tool observation, and the final pass or stop result. It then prints the changed code. This lets you watch the agent's decisions while it is running rather than waiting for a final trace.
 
 ## Project selection and repaired code
 

@@ -51,15 +51,13 @@ def main():
         return
     if args.temperature is not None:
         print("temperature:", args.temperature)
+    print("Starting repair. Live model and tool events will appear below.")
     result = build_repair_service(model=args.model, provider=args.provider, temperature=args.temperature,
                                   enable_github_research=args.research,
-                                  enable_langfuse=args.langfuse).repair(args.project_path)
-    print(result.summary)
+                                  enable_langfuse=args.langfuse, enable_live_trace=True).repair(args.project_path)
+    print("\nFinal result:", result.summary)
     print("passed:", result.passed)
     print("workspace:", result.workspace)
-    print("trace:")
-    for line in result.trace:
-        print("-", line)
     print("changed code:")
     if not result.changed_files:
         print("- No files changed.")

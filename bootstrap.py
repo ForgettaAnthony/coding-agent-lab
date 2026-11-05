@@ -64,10 +64,13 @@ def build_trajectory_observer(enabled=None):
 
 
 def build_repair_service(model=None, provider=None, temperature=None, enable_github_research=None,
-                         enable_langfuse=None):
+                         enable_langfuse=None, enable_live_trace=False):
     """Wire the agent use case to selected model, sandbox, research, and observability adapters."""
     research = build_github_research(enable_github_research)
     observer = build_trajectory_observer(enable_langfuse)
+    if enable_live_trace:
+        from adapters.observability.terminal import TerminalTrajectoryObserver
+        observer = TerminalTrajectoryObserver(delegate=observer)
     agent = RepairAgent(
         build_model_client(provider, model, temperature), research_enabled=research is not None, observer=observer,
     )

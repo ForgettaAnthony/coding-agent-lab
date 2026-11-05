@@ -64,7 +64,7 @@ Do not import Langfuse, change the observer implementation, add tools, or
 modify tests or other files.
 
 Verification is part of the task: run pytest -q tests/test_agent.py, then run
-pytest -q. Do not report completion until the results are 6 passed and then 27
+pytest -q. Do not report completion until the results are 6 passed and then 28
 passed. If a checkpoint fails, fix only core/repair_agent.py and rerun it.
 Report the actual final command results.
 ```
@@ -113,4 +113,4 @@ pytest -q tests/test_agent.py
 pytest -q
 ```
 
-Expected results: **6 passed**, then **27 passed**. `ScriptedClient` proves the agent loop without model non-determinism or generated-code execution on the host. `test_github_research.py`, `test_json_contract.py`, `test_langfuse_observability.py`, `test_model_temperature.py`, and `test_project_selection.py` use fakes or workspace copies, so the checkpoint never needs a token, Langfuse account, or Internet access.
+Expected results: **6 passed**, then **28 passed**. `ScriptedClient` proves the agent loop without model non-determinism or generated-code execution on the host. `test_github_research.py`, `test_json_contract.py`, `test_langfuse_observability.py`, `test_model_temperature.py`, `test_project_selection.py`, and `test_terminal_observability.py` use fakes or workspace copies, so the checkpoint never needs a token, Langfuse account, or Internet access.

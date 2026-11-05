@@ -51,7 +51,7 @@ For Vertex AI Gemini or the OpenAI API, follow [Model providers: choose one for 
 pytest -q
 ```
 
-Expected starting point: **17 passed, 10 failed**. The 10 failures are clear `NotImplementedError` messages from the student TODOs. This is expected. Exercises 1 and 2 use `ScriptedClient`, so this checkpoint needs no model, API key, Internet connection, or Docker daemon.
+Expected starting point: **18 passed, 10 failed**. The 10 failures are clear `NotImplementedError` messages from the student TODOs. This is expected. Exercises 1 and 2 use `ScriptedClient`, so this checkpoint needs no model, API key, Internet connection, or Docker daemon.
 
 ## 5. Prepare Docker for real sandboxed repairs
 

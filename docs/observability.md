@@ -2,14 +2,15 @@
 
 [Back to the lab guide](../README.md)
 
-The local `RepairResult.trace` is the basic trajectory visible in the CLI and Gradio UI. Langfuse is an optional external **observability adapter** for analyzing the same repair trajectory across runs.
+The local `RepairResult.trace` is the basic trajectory. The CLI displays it live as the agent runs; Gradio displays it after a repair completes. Langfuse is an optional external **observability adapter** for analyzing the same repair trajectory across runs.
 
-Gradio and Langfuse have different roles:
+The three views have different roles:
 
+- The CLI prints each model response, tool observation, and final result immediately.
 - Gradio presents one repair run to a student.
 - Langfuse records repair runs for later analysis.
 
-Langfuse does not replace `adapters/gradio_ui.py` and is not required for any core exercise checkpoint.
+`adapters/observability/terminal.py` is enabled only for `python main.py repair ...`. It prints locally and forwards the same events to Langfuse when `--langfuse` is enabled. Langfuse does not replace `adapters/gradio_ui.py` and is not required for any core exercise checkpoint.
 
 ## Setup
 
