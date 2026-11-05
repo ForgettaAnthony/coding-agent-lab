@@ -40,17 +40,31 @@ The normal repair evidence sequence is: read the relevant test and code, run tes
 - Keep the optional action `summary` in the visible trace. It is a short public statement such as “Read the failing test first,” not hidden reasoning and not a new permission.
 - Keep the latest test result. Return success only when `run_tests` reports that tests passed.
 
-### Record the visible trajectory and stop cleanly
+### Vibe-coding handoff: trace and stopping rules
 
-Call `self._record(...)` for `repair_started`, each `model_response`, and each `tool_result`. These calls work whether or not optional observability is configured. Do not import Langfuse here.
+If you use Codex, Claude, Cursor, or another coding assistant, give it this task after it has read `core/repair_agent.py` and `tests/test_agent.py`:
 
-For every terminal outcome, call `self._finish(result)` before returning the `RepairResult`:
+```text
+Modify only core/repair_agent.py.
 
-- tests pass;
-- the model response fails the JSON contract; or
-- the decision budget is exhausted.
+Implement traceability and stopping inside RepairAgent.run using the existing
+_record and _finish helpers.
 
-This loop is the **agent harness**: it supplies context, keeps conversation state, limits capabilities, records observations, and decides when to stop.
+Requirements:
+1. Record repair_started once before the loop.
+2. Record model_response after every model reply.
+3. Record tool_result after every tool observation or policy rejection.
+4. Keep a short, user-visible trace entry for each action.
+5. If parse_model_action rejects a reply, do not execute a tool. Record the
+   rejection and finish with a failed RepairResult.
+6. When tests pass, when the JSON action is invalid, or when max_steps is
+   exhausted, return the RepairResult through self._finish(result).
+
+Do not import Langfuse, change the observer implementation, add tools, or
+modify tests or other files.
+```
+
+This is the **agent harness** responsibility: the model proposes actions, while deterministic Python code records what happened, limits capabilities, and decides when the repair stops.
 
 ## JSON request format
 
