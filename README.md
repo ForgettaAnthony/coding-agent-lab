@@ -220,18 +220,6 @@ A repair begins with evidence, not a plausible-looking code change. The supplied
 
 `core/ports.py` is the **harness boundary**: it defines what a model can ask for (`RepairToolsPort`), what a provider must supply (`ChatModelPort`), and the optional `TrajectoryObserverPort`. `adapters/sandbox/` is the **tool runtime**, and `evals/` supplies fixed tasks. This separation lets students replace Ollama with a cloud provider, replace the UI, record to Langfuse, or test with `ScriptedClient` without rewriting the harness.
 
-## Relation to current coding-agent practice
-
-This is a teaching-sized harness, not a clone of a production coding-agent platform. It retains a small set of patterns visible in established repositories:
-
-- [Aider](https://github.com/Aider-AI/aider) uses repository context and verifies edits with linting and tests. This lab provides the selected fixture's file list, requires test inspection before editing, and makes `run_tests` the repair verdict.
-- [SWE-agent](https://github.com/SWE-agent/SWE-agent/blob/main/docs/usage/trajectories.md) persists model response, action, observation, state, and exact model input as a trajectory. This lab records the messages, model response, tool result, terminal result, and a short public action `summary`; Gradio and optional Langfuse expose that trajectory.
-- [OpenHands](https://github.com/OpenHands/OpenHands) and [Codex](https://github.com/openai/codex/blob/main/codex-rs/utils/cli/src/shared_options.rs) make the execution environment and approvals explicit. This lab keeps project code in a Docker runner, supplies only bounded tools, and makes external research and observability opt-in.
-
-Production agents additionally use repository maps, context compaction, Git/worktree review, provider-native structured tool calls, richer test/lint/build commands, and human approval workflows. Those are valuable later extensions; adding them now would hide the repair loop students need to learn.
-
-The lab asks the model for JSON so students can see parsing and tool dispatch directly. When a provider supports schema/function calling, a production adapter can translate its structured tool call into the same `RepairToolsPort`; the core capability policy and test-verification loop should remain unchanged.
-
 ## Internet access is a deliberate tool-policy decision
 
 This lab is **offline by default**. The agent may inspect only the selected evaluation fixture and run its supplied tests. It has no web-search, browser, host-shell, package-installation, or arbitrary-upload tool unless an instructor or student explicitly enables the optional [GitHub-research extension](docs/github-research.md).
