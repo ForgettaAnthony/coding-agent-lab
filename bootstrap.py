@@ -12,15 +12,15 @@ from adapters.sandbox.runner import create_workspace
 from adapters.sandbox.repair_tools import RepairTools
 
 
-def build_model_client(provider=None, model=None):
+def build_model_client(provider=None, model=None, temperature=None):
     """Create the configured outer model adapter without exposing it to the core."""
     provider = (provider or os.getenv("MODEL_PROVIDER", "ollama")).lower()
     if provider == "ollama":
-        return OllamaClient(model=model)
+        return OllamaClient(model=model, temperature=temperature)
     if provider in {"vertex", "vertex-gemini"}:
-        return VertexGeminiClient(model=model)
+        return VertexGeminiClient(model=model, temperature=temperature)
     if provider == "openai":
-        return OpenAIClient(model=model)
+        return OpenAIClient(model=model, temperature=temperature)
     raise ValueError("MODEL_PROVIDER must be 'ollama', 'vertex', or 'openai'.")
 
 
@@ -48,11 +48,12 @@ def build_trajectory_observer(enabled=None):
     return LangfuseTrajectoryObserver()
 
 
-def build_repair_service(model=None, provider=None, enable_github_research=None, enable_langfuse=None):
+def build_repair_service(model=None, provider=None, temperature=None, enable_github_research=None,
+                         enable_langfuse=None):
     """Wire the agent use case to selected model, sandbox, research, and observability adapters."""
     research = build_github_research(enable_github_research)
     observer = build_trajectory_observer(enable_langfuse)
     agent = RepairAgent(
-        build_model_client(provider, model), research_enabled=research is not None, observer=observer,
+        build_model_client(provider, model, temperature), research_enabled=research is not None, observer=observer,
     )
     return RepairService(agent, create_workspace, lambda workspace: RepairTools(workspace, research))

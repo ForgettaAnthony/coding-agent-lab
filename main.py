@@ -17,6 +17,17 @@ def eval_project_argument(value):
     return value
 
 
+def temperature_argument(value):
+    """Parse one portable sampling temperature within the lab's supported range."""
+    try:
+        temperature = float(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("temperature must be a number from 0 to 2.") from error
+    if not 0 <= temperature <= 2:
+        raise argparse.ArgumentTypeError("temperature must be between 0 and 2.")
+    return temperature
+
+
 def main():
     """Parse the selected interface command and start the requested workflow."""
     parser = argparse.ArgumentParser(description="Python Repair Agent Lab")
@@ -27,6 +38,8 @@ def main():
     repair.add_argument("--provider", choices=["ollama", "vertex", "openai"],
                         help="Model provider (default: MODEL_PROVIDER or ollama)")
     repair.add_argument("--model", help="Provider model identifier")
+    repair.add_argument("--temperature", type=temperature_argument,
+                        help="Sampling temperature from 0 to 2; provider support may vary")
     repair.add_argument("--research", action="store_true", default=None,
                         help="Enable bounded GitHub research (requires GITHUB_TOKEN)")
     repair.add_argument("--langfuse", action="store_true", default=None,
@@ -36,7 +49,9 @@ def main():
     if args.command == "ui":
         create_demo().launch()
         return
-    result = build_repair_service(model=args.model, provider=args.provider,
+    if args.temperature is not None:
+        print("temperature:", args.temperature)
+    result = build_repair_service(model=args.model, provider=args.provider, temperature=args.temperature,
                                   enable_github_research=args.research,
                                   enable_langfuse=args.langfuse).repair(args.project_path)
     print(result.summary)

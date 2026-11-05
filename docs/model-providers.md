@@ -51,3 +51,9 @@ docker build -t coding-agent-lab-runner adapters/sandbox
 python main.py repair evals/arithmetic
 python main.py ui
 ```
+
+## Temperature setting for Exercise 4
+
+The terminal repair command accepts `--temperature` from `0` to `2` when you want to run the optional [temperature experiment](exercises/04-temperature-experiment.md). The value is passed from the CLI through `bootstrap.py` to the selected model adapter; the repair policy in `core/` does not change.
+
+Provider support is model-specific. If a provider rejects the parameter, record that result and use a supported provider for the comparison. Do not change `top_p` during the temperature experiment.

@@ -131,6 +131,8 @@ The first test run should fail with clear `NotImplementedError` messages from th
 
 The GitHub-research and Langfuse sections are optional extensions; skip them on the first pass through the lab.
 
+[Exercise 4: Temperature experiment](docs/exercises/04-temperature-experiment.md) is an optional 20-minute empirical extension. It requires a configured live model and does not add to the required 2.5-hour implementation path.
+
 ## Architecture map
 
 | Clean Architecture ring | Lab package | Responsibility |
@@ -148,6 +150,7 @@ Run `main.py`; it is the only application entry point. `bootstrap.py` is importe
 ```bash
 python main.py repair evals/arithmetic
 python main.py repair evals/arithmetic --provider ollama --model qwen2.5-coder:7b
+python main.py repair evals/arithmetic --provider ollama --model qwen2.5-coder:7b --temperature 0.0
 python main.py ui
 ```
 
@@ -300,15 +303,16 @@ The runner rejects commands such as `python`, `pip`, `curl`, `sh`, and `rm`. Thi
 
 ## Exercises: complete in order
 
-Run each checkpoint from the repository root. Exercises 1 and 2 need no model provider or API key.
+Run each checkpoint from the repository root. Exercises 1 and 2 need no model provider or API key. Exercise 4 uses a configured live model.
 
 1. [Exercise 1: Safe tools (25 minutes)](docs/exercises/01-safe-tools.md): implement the workspace-scoped read, edit, and test tools.
 2. [Exercise 2: Agent loop (65 minutes)](docs/exercises/02-agent-loop.md): implement the model-to-tool repair harness.
 3. [Exercise 3: Gradio UI adapter (20 minutes)](docs/exercises/03-gradio-ui.md): present the repair result in the provided interface.
+4. [Exercise 4: Temperature experiment (20 minutes, optional)](docs/exercises/04-temperature-experiment.md): compare repair traces under controlled model sampling settings.
 
 ## Model provider for the live demonstration
 
-After Exercises 1 and 2 pass, follow [Model providers: choose one for the live demonstration](docs/model-providers.md). It covers local Ollama, Vertex AI Gemini, and the OpenAI API. No provider is needed for the deterministic checkpoints.
+After Exercises 1 and 2 pass, follow [Model providers: choose one for the live demonstration](docs/model-providers.md). It covers local Ollama, Vertex AI Gemini, and the OpenAI API. No provider is needed for the deterministic checkpoints. It is also required for the optional temperature experiment.
 
 ## Optional observability extension
 
