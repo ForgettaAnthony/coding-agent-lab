@@ -17,9 +17,9 @@ In this lab, temperature changes only model generation. It does not change the p
 ## Architecture boundary
 
 ```text
-main.py --temperature 0.8
+main.py --temperature 0.8 or MODEL_TEMPERATURE=0.8
         ↓
-bootstrap.py
+bootstrap.py model loader
         ↓
 adapters/models/<provider>.py
         ↓
@@ -40,7 +40,7 @@ Temperature is provider configuration, so it belongs at the outer edge of the ar
    pytest -q tests/test_model_temperature.py
    ```
 
-   Expected result: **4 passed**.
+   Expected result: **5 passed**.
 
 4. Use the same provider and model for every run in this exercise. Choose a provider that you have already configured for the final demonstration.
 

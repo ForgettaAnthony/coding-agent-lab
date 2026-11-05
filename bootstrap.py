@@ -12,9 +12,24 @@ from adapters.sandbox.runner import create_workspace
 from adapters.sandbox.repair_tools import RepairTools
 
 
+def load_model_temperature(temperature=None):
+    """Load a CLI override or MODEL_TEMPERATURE before an adapter is constructed."""
+    configured = temperature if temperature is not None else os.getenv("MODEL_TEMPERATURE")
+    if configured is None:
+        return None
+    try:
+        configured = float(configured)
+    except (TypeError, ValueError) as error:
+        raise ValueError("Model temperature must be a number from 0 to 2.") from error
+    if not 0 <= configured <= 2:
+        raise ValueError("Model temperature must be between 0 and 2.")
+    return configured
+
+
 def build_model_client(provider=None, model=None, temperature=None):
     """Create the configured outer model adapter without exposing it to the core."""
     provider = (provider or os.getenv("MODEL_PROVIDER", "ollama")).lower()
+    temperature = load_model_temperature(temperature)
     if provider == "ollama":
         return OllamaClient(model=model, temperature=temperature)
     if provider in {"vertex", "vertex-gemini"}:

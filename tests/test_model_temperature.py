@@ -51,9 +51,28 @@ def test_bootstrap_passes_temperature_to_the_selected_adapter(monkeypatch):
             captured["model"] = model
             captured["temperature"] = temperature
 
+    monkeypatch.setenv("MODEL_TEMPERATURE", "0.6")
     monkeypatch.setattr(bootstrap, "OllamaClient", CapturingOllamaClient)
     bootstrap.build_model_client(provider="ollama", model="test-model", temperature=0.8)
     assert captured == {"model": "test-model", "temperature": 0.8}
+
+
+def test_model_loader_reads_temperature_from_the_environment(monkeypatch):
+    """Verify the model loader configures an adapter for interfaces without a CLI flag."""
+    captured = {}
+
+    class CapturingOllamaClient:
+        """Capture model construction arguments without contacting a provider."""
+
+        def __init__(self, model=None, temperature=None):
+            """Store the configuration that bootstrap supplies."""
+            captured["model"] = model
+            captured["temperature"] = temperature
+
+    monkeypatch.setenv("MODEL_TEMPERATURE", "0.6")
+    monkeypatch.setattr(bootstrap, "OllamaClient", CapturingOllamaClient)
+    bootstrap.build_model_client(provider="ollama", model="test-model")
+    assert captured == {"model": "test-model", "temperature": 0.6}
 
 
 def test_ollama_client_sends_an_explicit_temperature(monkeypatch):

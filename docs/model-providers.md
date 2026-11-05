@@ -54,6 +54,13 @@ python main.py ui
 
 ## Temperature setting for Exercise 4
 
-The terminal repair command accepts `--temperature` from `0` to `2` when you want to run the optional [temperature experiment](exercises/04-temperature-experiment.md). The value is passed from the CLI through `bootstrap.py` to the selected model adapter; the repair policy in `core/` does not change.
+The model loader in `bootstrap.py` reads a `MODEL_TEMPERATURE` value between `0` and `2` before it constructs the selected provider adapter. This setting is useful for the Gradio interface and other entry points that do not expose a command-line flag:
+
+```bash
+export MODEL_TEMPERATURE=0.8
+python main.py ui
+```
+
+The terminal repair command accepts `--temperature` for the optional [temperature experiment](exercises/04-temperature-experiment.md). An explicit command-line value takes precedence over `MODEL_TEMPERATURE`. The repair policy in `core/` does not change.
 
 Provider support is model-specific. If a provider rejects the parameter, record that result and use a supported provider for the comparison. Do not change `top_p` during the temperature experiment.

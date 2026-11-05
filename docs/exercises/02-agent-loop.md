@@ -65,4 +65,4 @@ pytest -q tests/test_agent.py
 pytest -q
 ```
 
-Expected results: **5 passed**, then **18 passed**. `ScriptedClient` proves the agent loop without model non-determinism or generated-code execution on the host. `test_github_research.py`, `test_langfuse_observability.py`, `test_model_temperature.py`, and `test_project_selection.py` use fakes or workspace copies, so the checkpoint never needs a token, Langfuse account, or Internet access.
+Expected results: **5 passed**, then **19 passed**. `ScriptedClient` proves the agent loop without model non-determinism or generated-code execution on the host. `test_github_research.py`, `test_langfuse_observability.py`, `test_model_temperature.py`, and `test_project_selection.py` use fakes or workspace copies, so the checkpoint never needs a token, Langfuse account, or Internet access.
