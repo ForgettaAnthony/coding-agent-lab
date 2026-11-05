@@ -105,29 +105,71 @@ This follows the **Dependency Rule**: source-code dependencies point inward, fro
 
 ## Setup
 
-Prerequisites: Python 3.10 or later (3.11 recommended) and Docker Desktop. Check that Docker is running before building the isolated test runner.
+Follow these steps in order. You need Python 3.10 or later (3.11 recommended). Docker Desktop is needed for a live repair, but not for the first deterministic unit-test checkpoint.
+
+### 1. Fork and clone the student repository
+
+On GitHub, click **Fork** on `MahiBegoug/coding-agent-lab`. Clone **your fork**, replacing `YOUR-USERNAME` below:
 
 ```bash
+git clone https://github.com/YOUR-USERNAME/coding-agent-lab.git
 cd coding-agent-lab
+git remote -v
+```
+
+Your `origin` remote should point to your fork. Keep your implementation commits in this repository.
+
+### 2. Create the Python environment and install base dependencies
+
+```bash
 python3 --version
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-docker info
-docker build -t coding-agent-lab-runner adapters/sandbox
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+The base requirements install the exercise checkpoints and Gradio. Do not install every optional cloud integration. Install only the one model-provider package you plan to use for the live demonstration.
+
+### 3. Configure one model provider for the live demonstration
+
+The deterministic unit-test checkpoint in Step 4 does not call a model, and neither does Docker preparation in Step 5. Configure a provider now if you want to confirm your live setup early, or defer it until Exercises 1 and 2 pass.
+
+For the default local Ollama option, first [install Ollama](https://ollama.com/download) for your operating system. Then download the model only if your computer has enough disk space and memory. If it does not, use a cloud option from the model-provider guide instead:
+
+```bash
+ollama pull qwen2.5-coder:7b
+# In a separate terminal:
+ollama serve
+```
+
+For Vertex AI Gemini or the OpenAI API, follow [Model providers: choose one for the live demonstration](docs/model-providers.md). It lists the exact optional dependency and credential commands. Do not put API keys in repository files.
+
+### 4. Run the starting unit-test checkpoint
+
+```bash
 pytest -q
 ```
 
-The first test run should fail with clear `NotImplementedError` messages from the exercises. This is expected. You do **not** need an LLM, an API key, GitHub research, or Langfuse to complete Exercises 1 and 2: their checkpoints use `ScriptedClient`.
+Expected starting point: **17 passed, 10 failed**. The 10 failures are clear `NotImplementedError` messages from the student TODOs. This is expected. Exercises 1 and 2 use `ScriptedClient`, so this checkpoint needs no model, API key, Internet connection, or Docker daemon.
 
-`docker info` must succeed. If it does not, start Docker Desktop before building the isolated runner.
+### 5. Prepare Docker for real sandboxed repairs
+
+Start Docker Desktop, then run:
+
+```bash
+docker info
+docker build -t coding-agent-lab-runner adapters/sandbox
+```
+
+`docker info` must succeed before a live repair or UI repair. Docker is the execution boundary: it runs the evaluation project tests, while the host runs only the harness and user interface.
 
 ### Required 2.5-hour path
 
 1. Complete Exercise 1 and its tool checkpoint.
 2. Complete Exercise 2 and its deterministic agent-loop checkpoint.
 3. Complete Exercise 3 and launch the UI.
-4. After the checkpoints pass, choose one [model provider for the live final demonstration](docs/model-providers.md).
+4. Use the provider configured during setup, or choose one [model provider for the live final demonstration](docs/model-providers.md).
 
 The GitHub-research and Langfuse sections are optional extensions; skip them on the first pass through the lab.
 
