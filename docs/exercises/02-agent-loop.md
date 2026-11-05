@@ -10,18 +10,47 @@ Implement the bounded repair harness: it gives task context to an LLM, executes 
 
 `core/repair_agent.py`
 
-Read, but do not modify, `core/prompts.py`. It supplies the role names and prompt templates.
+Read, but do not modify, `core/prompts.py`. It already provides the role constants, prompt builders, JSON validator, and tool-result formatter. The imports and the `_record` / `_finish` helper methods are already present in `repair_agent.py`.
 
-1. Use `build_system_prompt`, `build_case_request`, `SYSTEM_ROLE`, and `USER_ROLE` to build the initial system and user messages. Include the selected case and supplied project file list so the LLM does not invent paths.
-2. Call `self.client.chat(messages)` and validate the response with `parse_model_action(reply)` before dispatching a tool.
-3. Preserve an action's optional `summary` in the visible trace. It is a brief public action plan, such as “Read the failing test first,” not hidden reasoning; it never expands tool authority.
-4. Follow the supplied evidence sequence: inspect a test, reproduce its failure with `run_tests`, make a focused edit, and verify it with `run_tests`. Dispatch only `read_file`, `edit_file`, `run_tests`, the supplied restricted `run_command`, and opt-in `search_github` on the injected `tools` object.
-5. Append the response using `ASSISTANT_ROLE`, then a `USER_ROLE` message built with `build_tool_result(observation)` after every tool action.
-6. Reject `search_github` with a visible tool error until a `read_file` action succeeds; do not rely on the prompt alone for this policy.
-7. Emit `repair_started`, `model_response`, and `tool_result` through `self._record(...)`. Return every terminal `RepairResult` through `self._finish(...)`. The observer is optional: never import Langfuse in this file.
-8. Stop when tests pass, an invalid JSON action arrives, or `max_steps` is reached. Return `RepairResult` in every outcome.
+### Build the first two messages
 
-The harness controls are **context**, **state**, **capability boundary**, **observation loop**, **traceability**, and **termination policy**.
+Implement `build_initial_messages(case_name, files)` first. Return a list with exactly two dictionaries:
+
+1. A system message built with `SYSTEM_ROLE` and `build_system_prompt(self.research_enabled)`.
+2. A user message built with `USER_ROLE` and `build_case_request(case_name, files)`.
+
+The case name and file list give the LLM the project context it needs. Do not let it invent file paths.
+
+### Implement one repair-loop step
+
+Then implement `run`. Start with the initial messages and repeat for at most `max_steps` decisions. In each step:
+
+1. Call `self.client.chat(messages)` to get the model response.
+2. Add that response to `messages` with `ASSISTANT_ROLE`.
+3. Call `parse_model_action(reply)`. If validation fails, return a failed `RepairResult` immediately. Do not attempt to extract JSON from prose and do not call a tool.
+4. Dispatch the validated request through the provided `tools` object. The only tool names are `read_file`, `edit_file`, `run_tests`, `run_command`, and opt-in `search_github`.
+5. Add the tool observation back to `messages` as a `USER_ROLE` message made with `build_tool_result(observation)`. This is how the next model decision sees what happened.
+
+The normal repair evidence sequence is: read the relevant test and code, run tests to reproduce the failure, make one focused edit, then run tests again to verify the repair.
+
+### Enforce the harness rules in code
+
+- `run_command` is already a restricted inspection capability. Do not add a shell or another tool.
+- Allow `search_github` only after a successful `read_file`. Before that, return a visible tool-error observation. The prompt asks for this order, but your Python code must enforce it.
+- Keep the optional action `summary` in the visible trace. It is a short public statement such as “Read the failing test first,” not hidden reasoning and not a new permission.
+- Keep the latest test result. Return success only when `run_tests` reports that tests passed.
+
+### Record the visible trajectory and stop cleanly
+
+Call `self._record(...)` for `repair_started`, each `model_response`, and each `tool_result`. These calls work whether or not optional observability is configured. Do not import Langfuse here.
+
+For every terminal outcome, call `self._finish(result)` before returning the `RepairResult`:
+
+- tests pass;
+- the model response fails the JSON contract; or
+- the decision budget is exhausted.
+
+This loop is the **agent harness**: it supplies context, keeps conversation state, limits capabilities, records observations, and decides when to stop.
 
 ## JSON request format
 
