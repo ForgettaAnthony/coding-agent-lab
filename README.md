@@ -151,17 +151,17 @@ For every repair, the harness copies the selected project into a new disposable 
 
 ```mermaid
 flowchart LR
-    baseline["evals/arithmetic<br/>immutable instructor baseline"]
-    copy["create_workspace(...)<br/>new temporary project copy"]
-    agent["RepairAgent + repair tools<br/>may read and edit only the copy"]
-    docker["Docker test runner<br/>read-only mount of the copy<br/>network disabled + resource limits"]
-    result["Repair evidence<br/>trace + changed files + test result"]
+    baseline["Original buggy project<br/>evals/arithmetic<br/>never changed"]
+    copy["Working copy<br/>temporary and safe to edit"]
+    agent["Repair agent<br/>reads and edits the working copy"]
+    docker["Safe test sandbox<br/>runs pytest on the copy<br/>no network"]
+    result["Repair outcome<br/>trace + changed code + test result"]
 
-    baseline -->|copy, never edit| copy
+    baseline -->|make a copy| copy
     copy --> agent
-    agent -->|edit_file| copy
-    copy -->|mount read-only| docker
-    docker -->|pytest result| agent
+    agent -->|save repair| copy
+    copy -->|test read-only copy| docker
+    docker -->|test result| agent
     agent --> result
 
     classDef baseline fill:#dafbe1,stroke:#1a7f37,color:#24292f
