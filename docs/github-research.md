@@ -6,15 +6,52 @@ This extension lets students study how a coding agent can receive bounded Intern
 
 ## Setup
 
+### 1. Create a short-lived, least-privilege GitHub token
+
+This lab searches **public GitHub code only**. Create a fine-grained personal access token; do not use a personal access token (classic).
+
+1. Sign in to GitHub and open the [fine-grained token creation page](https://github.com/settings/personal-access-tokens/new). You can also reach it through **Profile picture → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
+2. Set **Token name** to `coding-agent-lab-research` and choose a short **Expiration**, such as the end of the lab week.
+3. Under **Resource owner**, select your personal GitHub account. Do not choose an organization unless course staff has specifically arranged it.
+4. Under **Repository access**, select **Public Repositories**. Do not give the token access to a private repository.
+5. Leave all repository, organization, and account permissions unselected. The adapter only calls the read-only code-search endpoint; it never writes to GitHub.
+6. Click **Generate token**, then copy the token immediately. GitHub shows the token value only once. Treat it like a password.
+
+GitHub requires authentication for code search, and fine-grained tokens have read-only access to public repositories without extra permissions. See GitHub's [fine-grained token guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) and [code-search API documentation](https://docs.github.com/en/rest/search/search#search-code).
+
+### 2. Enable research for one terminal session
+
+**macOS/Linux**
+
 ```bash
-export GITHUB_TOKEN="your-fine-grained-token"
+export GITHUB_TOKEN="paste-the-token-here"
 python main.py repair evals/multi_function --research
 ```
 
+**Windows PowerShell**
+
+```powershell
+$env:GITHUB_TOKEN = "paste-the-token-here"
+python main.py repair evals/multi_function --research
+```
+
+The variable lasts only for the current terminal session. Never place the token in source code, a notebook, a prompt, or a file committed to Git.
+
 For the Gradio interface, set `ENABLE_GITHUB_RESEARCH=true` before starting the UI:
 
+**macOS/Linux**
+
 ```bash
+export GITHUB_TOKEN="paste-the-token-here"
 export ENABLE_GITHUB_RESEARCH=true
+python main.py ui
+```
+
+**Windows PowerShell**
+
+```powershell
+$env:GITHUB_TOKEN = "paste-the-token-here"
+$env:ENABLE_GITHUB_RESEARCH = "true"
 python main.py ui
 ```
 
