@@ -12,23 +12,23 @@ In this lab, you will build a Python repair agent. It receives a small buggy Pyt
 
 ## Repository guide
 
-This repository tree provides an overview of the files used in the lab. `TODO` marks the three files students modify during the required path.
+This repository tree provides an overview of the files used in the lab. Colored markers identify the three files students modify: 🟨 Exercise 1, 🟦 Exercise 2, and 🟪 Exercise 3.
 
 ```text
 coding-agent-lab/
 ├── main.py                         # application entry point
 ├── bootstrap.py                    # composition root and dependency injection
 ├── core/                           # repair policy, prompts, models, and ports
-│   ├── repair_agent.py             # TODO: Exercise 2, agent loop
+│   ├── repair_agent.py             # 🟦 TODO 2: agent loop
 │   ├── repair_service.py           # repair use case
 │   ├── prompts.py                  # model-facing messages
 │   ├── models.py                   # repair result data
 │   └── ports.py                    # interfaces used by the core
 ├── adapters/                       # concrete technology integrations
-│   ├── gradio_ui.py                # TODO: Exercise 3, UI adapter
+│   ├── gradio_ui.py                # 🟪 TODO 3: UI adapter
 │   ├── models/                     # Ollama, OpenAI, and Vertex adapters
 │   ├── sandbox/
-│   │   ├── repair_tools.py          # TODO: Exercise 1, safe tools
+│   │   ├── repair_tools.py          # 🟨 TODO 1: safe tools
 │   │   ├── runner.py                # Docker-only test and inspection runner
 │   │   └── Dockerfile
 │   ├── research/                   # optional GitHub research adapter
