@@ -324,3 +324,7 @@ After the core lab, follow [Optional Langfuse observability: trajectory analysis
 6. Identify the security boundary: only `adapters/sandbox/runner.py` executes case code or the restricted inspection command, inside Docker and not on the host.
 7. Optional: enable GitHub research, show a cited `search_github` observation in the trace, and explain why the returned code is only a hypothesis until local tests pass.
 8. Optional: with approved Langfuse credentials, show the agent, generation, and tool observations for one repair; explain the external data boundary.
+
+## License
+
+This lab is available under the [MIT License](LICENSE). You may use, modify, and share it, provided the copyright and license notice are retained.
