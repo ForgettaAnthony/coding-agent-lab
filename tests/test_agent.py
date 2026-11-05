@@ -129,3 +129,12 @@ def test_agent_stops_at_budget_without_running_host_code(monkeypatch, tmp_path):
     result = RepairAgent(client=client, max_steps=2).run("anything", ["x.py"], RepairTools(tmp_path))
     assert result.passed is False
     assert "budget" in result.summary.lower()
+
+
+def test_agent_rejects_an_action_outside_the_json_contract(tmp_path):
+    """Verify an invalid action cannot reach a repair tool or continue the loop."""
+    client = ScriptedClient([json.dumps({"tool": "run_tests", "unexpected": True})])
+    result = RepairAgent(client=client).run("anything", [], RepairTools(tmp_path))
+    assert result.passed is False
+    assert "JSON action contract" in result.summary
+    assert "rejected_model_response" in result.trace[0]

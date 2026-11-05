@@ -13,19 +13,19 @@ Implement the bounded repair harness: it gives task context to an LLM, executes 
 Read, but do not modify, `core/prompts.py`. It supplies the role names and prompt templates.
 
 1. Use `build_system_prompt`, `build_case_request`, `SYSTEM_ROLE`, and `USER_ROLE` to build the initial system and user messages. Include the selected case and supplied project file list so the LLM does not invent paths.
-2. Call `self.client.chat(messages)` and parse one JSON response.
+2. Call `self.client.chat(messages)` and validate the response with `parse_model_action(reply)` before dispatching a tool.
 3. Preserve an action's optional `summary` in the visible trace. It is a brief public action plan, such as “Read the failing test first,” not hidden reasoning; it never expands tool authority.
 4. Follow the supplied evidence sequence: inspect a test, reproduce its failure with `run_tests`, make a focused edit, and verify it with `run_tests`. Dispatch only `read_file`, `edit_file`, `run_tests`, the supplied restricted `run_command`, and opt-in `search_github` on the injected `tools` object.
 5. Append the response using `ASSISTANT_ROLE`, then a `USER_ROLE` message built with `build_tool_result(observation)` after every tool action.
 6. Reject `search_github` with a visible tool error until a `read_file` action succeeds; do not rely on the prompt alone for this policy.
 7. Emit `repair_started`, `model_response`, and `tool_result` through `self._record(...)`. Return every terminal `RepairResult` through `self._finish(...)`. The observer is optional: never import Langfuse in this file.
-8. Stop when tests pass, a malformed model response arrives, or `max_steps` is reached. Return `RepairResult` in every outcome.
+8. Stop when tests pass, an invalid JSON action arrives, or `max_steps` is reached. Return `RepairResult` in every outcome.
 
 The harness controls are **context**, **state**, **capability boundary**, **observation loop**, **traceability**, and **termination policy**.
 
 ## JSON request format
 
-The deterministic checkpoint returns bare JSON. A real model may surround its JSON with one outer Markdown code fence despite the prompt; accept that fence before calling `json.loads`, but do not attempt to extract JSON from arbitrary prose.
+The model must return exactly one complete JSON object. The harness rejects Markdown fences, prose, arrays, repeated keys, unknown tools, missing arguments, and extra fields before it dispatches a tool. Do not strip wrappers or attempt to extract JSON from prose.
 
 ```json
 {"summary":"Read the failing test first","tool":"read_file","path":"test_calculator.py"}
@@ -65,4 +65,4 @@ pytest -q tests/test_agent.py
 pytest -q
 ```
 
-Expected results: **5 passed**, then **19 passed**. `ScriptedClient` proves the agent loop without model non-determinism or generated-code execution on the host. `test_github_research.py`, `test_langfuse_observability.py`, `test_model_temperature.py`, and `test_project_selection.py` use fakes or workspace copies, so the checkpoint never needs a token, Langfuse account, or Internet access.
+Expected results: **6 passed**, then **27 passed**. `ScriptedClient` proves the agent loop without model non-determinism or generated-code execution on the host. `test_github_research.py`, `test_json_contract.py`, `test_langfuse_observability.py`, `test_model_temperature.py`, and `test_project_selection.py` use fakes or workspace copies, so the checkpoint never needs a token, Langfuse account, or Internet access.

@@ -6,6 +6,12 @@ No model provider is needed for Exercises 1 and 2. Their checkpoints use `Script
 
 The core depends on `ChatModelPort`, never on a specific vendor. `bootstrap.py` selects the concrete adapter using `MODEL_PROVIDER`.
 
+## JSON action mode
+
+Each adapter requests JSON output from its provider: Ollama uses the chat API's `format: "json"`, Vertex Gemini uses `response_mime_type="application/json"`, and OpenAI uses the Responses API JSON mode. This helps the model produce a parseable object, but the core still checks the exact repair-action contract before dispatching any tool. Provider JSON mode is a formatting control, not a permission system.
+
+For further reading, see the [Ollama chat API](https://docs.ollama.com/api/chat), [Vertex controlled JSON output](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/samples/generativeaionvertexai-gemini-controlled-generation-response-schema-2), and [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
+
 ## Ollama: default local option
 
 Use the default `qwen2.5-coder:7b` only when your computer has sufficient disk space and memory.

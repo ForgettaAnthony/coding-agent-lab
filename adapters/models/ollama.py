@@ -15,8 +15,8 @@ class OllamaClient:
         self.temperature = temperature
 
     def chat(self, messages):
-        """Send conversation messages to Ollama and return its text response."""
-        payload = {"model": self.model, "messages": messages, "stream": False}
+        """Send one JSON-mode conversation to Ollama and return its text response."""
+        payload = {"model": self.model, "messages": messages, "stream": False, "format": "json"}
         if self.temperature is not None:
             payload["options"] = {"temperature": self.temperature}
         payload = json.dumps(payload).encode()

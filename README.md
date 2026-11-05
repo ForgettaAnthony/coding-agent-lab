@@ -249,6 +249,10 @@ flowchart TD
 
 In this lab, `core/repair_agent.py` is the **harness controller**. Its responsibilities are to construct the task context, maintain conversation state, parse model requests, dispatch only approved tools, record a trace, return observations to the model, and stop on passing tests or a fixed budget. The LLM adapter never gains shell access or direct access to the host project.
 
+### Strict JSON action contract
+
+Every model response must be one JSON action object with only the fields needed for its selected tool. The provider adapters request JSON output, and `core/prompts.py` validates the object before the harness dispatches any tool. JSON output mode reduces formatting errors, but it is not authorization: an array, Markdown fence, unknown tool, missing argument, or extra field is rejected and never reaches the workspace or Docker runner.
+
 ### Program-repair rule: reproduce before repair
 
 A repair begins with evidence, not a plausible-looking code change. The supplied `evals/` fixtures are designed to fail reproducibly in the Docker runner. The system prompt therefore requires this sequence: inspect a test, run it to observe the failure, make a focused edit, then run the tests again. A passing post-edit result is the repair verdict. If the initial test run passes or cannot run, do not make a speculative change. Keep the trace and report the unexpected baseline result to the instructor.

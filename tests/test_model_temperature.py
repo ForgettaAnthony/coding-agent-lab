@@ -88,5 +88,6 @@ def test_ollama_client_sends_an_explicit_temperature(monkeypatch):
     monkeypatch.setattr("adapters.models.ollama.request.urlopen", fake_urlopen)
     response = OllamaClient(model="test-model", base_url="http://example.test", temperature=0.8).chat([])
     assert response == "{}"
+    assert captured["payload"]["format"] == "json"
     assert captured["payload"]["options"] == {"temperature": 0.8}
     assert captured["timeout"] == 120

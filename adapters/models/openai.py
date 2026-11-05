@@ -12,14 +12,18 @@ class OpenAIClient:
         self.temperature = temperature
 
     def chat(self, messages):
-        """Submit the conversation to OpenAI and return its output text."""
+        """Submit the conversation in JSON mode to OpenAI and return its output text."""
         if not os.getenv("OPENAI_API_KEY"):
             raise ValueError("OpenAI requires OPENAI_API_KEY.")
         try:
             from openai import OpenAI
         except ImportError as error:
             raise RuntimeError("Install optional OpenAI support: pip install -r requirements-openai.txt") from error
-        request_arguments = {"model": self.model, "input": messages}
+        request_arguments = {
+            "model": self.model,
+            "input": messages,
+            "text": {"format": {"type": "json_object"}},
+        }
         if self.temperature is not None:
             request_arguments["temperature"] = self.temperature
         response = OpenAI().responses.create(**request_arguments)

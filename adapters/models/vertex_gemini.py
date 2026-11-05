@@ -14,7 +14,7 @@ class VertexGeminiClient:
         self.temperature = 0 if temperature is None else temperature
 
     def chat(self, messages):
-        """Flatten harness messages and return a deterministic Gemini response."""
+        """Flatten harness messages and return a JSON-mode Gemini response."""
         if not self.project:
             raise ValueError("Vertex requires GOOGLE_CLOUD_PROJECT.")
         try:
@@ -29,6 +29,10 @@ class VertexGeminiClient:
         response = client.models.generate_content(
             model=self.model,
             contents=contents,
-            config=types.GenerateContentConfig(system_instruction=system, temperature=self.temperature),
+            config=types.GenerateContentConfig(
+                system_instruction=system,
+                temperature=self.temperature,
+                response_mime_type="application/json",
+            ),
         )
         return response.text
