@@ -29,7 +29,7 @@ For further reading, see the [Ollama chat API](https://docs.ollama.com/api/chat)
 
 ## Ollama: default local option
 
-Use the default `qwen2.5-coder:7b` only when your computer has sufficient disk space and memory. Install Ollama using its [official installer for your operating system](https://ollama.com/download), then download the model:
+Use the default `qwen2.5-coder:7b` only when your computer has sufficient disk space and memory. This lab uses Ollama's **local** API, so it does not require an API key. Follow the [Ollama local quickstart](https://docs.ollama.com/quickstart) to install and open Ollama on your operating system, then download the model:
 
 ```bash
 ollama pull qwen2.5-coder:7b
@@ -59,7 +59,16 @@ python main.py ui
 
 ## Vertex AI Gemini: cloud option
 
-This option avoids a local model download. Install the [Google Cloud CLI](https://docs.cloud.google.com/sdk/docs/install) for your operating system before the first two commands. `gcloud init` is needed once per workstation or when you need to select a different account or project.
+This option avoids a local model download. It uses a Google Cloud project and Application Default Credentials (ADC), not a Gemini API key.
+
+Before running the lab commands, complete this one-time setup:
+
+1. Sign in to the [Google Cloud project selector](https://console.cloud.google.com/projectselector2/home/dashboard), then create a project or select a project that your instructor has made available to you.
+2. [Enable billing for the project](https://console.cloud.google.com/billing). If you cannot create projects or attach billing, ask the course staff for a project with Vertex AI access.
+3. Open the [Vertex AI API page](https://console.cloud.google.com/apis/library/aiplatform.googleapis.com), select the project, and choose **Enable**.
+4. Install the [Google Cloud CLI](https://docs.cloud.google.com/sdk/docs/install) for your operating system. `gcloud init` is needed once per workstation or when you need to select a different account or project.
+
+Then install the optional Python package and create local ADC. The browser sign-in must use a Google account that can access the selected project:
 
 ```bash
 python -m pip install -r requirements-vertex.txt
@@ -103,11 +112,17 @@ $env:VERTEX_MODEL = "gemini-2.5-flash"
 python main.py ui
 ```
 
-The Vertex adapter uses the Google Gen AI SDK and Application Default Credentials. It is optional, so no cloud package or credential is needed for the deterministic checkpoint. Never store API keys or service-account JSON in this repository. See [Google Gen AI SDK for Vertex AI](https://googleapis.github.io/python-genai/genai.html) and [Google Cloud authentication guidance](https://docs.cloud.google.com/docs/authentication/provide-credentials-adc).
+The Vertex adapter uses the Google Gen AI SDK and Application Default Credentials. It is optional, so no cloud package or credential is needed for the deterministic checkpoint. Never store service-account JSON in this repository. For a detailed explanation of local credentials, see [Set up Application Default Credentials](https://docs.cloud.google.com/docs/authentication/provide-credentials-adc).
 
 ## OpenAI API: cloud option
 
 Use a model identifier available to your API project, such as a low-cost Nano model when enabled.
+
+Before running the lab command, complete this one-time setup:
+
+1. Read the [OpenAI API quickstart](https://developers.openai.com/api/docs/quickstart), then sign in to the OpenAI Platform.
+2. Open the [API keys page](https://platform.openai.com/api-keys) and create a project API key. Copy it once and keep it private.
+3. Follow the quickstart's **Add credits** step if your project does not yet have API credits or the API reports a billing limit.
 
 ```bash
 python -m pip install -r requirements-openai.txt
@@ -147,7 +162,7 @@ $env:OPENAI_MODEL = "gpt-5-nano"
 python main.py ui
 ```
 
-The OpenAI adapter uses the Responses API and returns text through the same `ChatModelPort`; no OpenAI dependency is installed by default. [OpenAI’s current model guide](https://developers.openai.com/api/docs/guides/latest-model.md) describes how to choose a model based on quality, speed, and cost.
+The OpenAI adapter uses the Responses API and returns text through the same `ChatModelPort`; no OpenAI dependency is installed by default. Keep the key only in your current terminal or a secure secret manager, never in the repository. [OpenAI’s current model guide](https://developers.openai.com/api/docs/guides/latest-model.md) can help when choosing an available model based on quality, speed, and cost.
 
 ## After choosing a provider
 
