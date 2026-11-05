@@ -19,7 +19,9 @@ Your `origin` remote should point to your fork. Record the displayed commit iden
 
 ## 2. Create the Python environment and install base dependencies
 
-You need Python 3.10 or later. Python 3.11 is recommended.
+You need Python 3.10 or later. Python 3.11 is recommended. Use the block for your shell. After activation, the remaining lab commands use `python` and work the same way on every supported operating system.
+
+**macOS or Linux (`zsh` or `bash`)**
 
 ```bash
 python3 --version
@@ -29,26 +31,34 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
+**Windows PowerShell**
+
+```powershell
+py --version
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+If PowerShell blocks `Activate.ps1`, run the following command in that PowerShell window, then activate the environment again. It affects only the current window:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
 The base requirements install the exercise checkpoints and Gradio. Do not install every optional cloud integration. Install only the provider package that you plan to use for the live demonstration.
 
 ## 3. Configure one model provider for the live demonstration
 
 The deterministic checkpoint in Step 4 does not call a model, and neither does Docker preparation in Step 5. Configure a provider now if you want to confirm your live setup early, or defer it until Exercises 1 and 2 pass.
 
-For the default local Ollama option, first [install Ollama](https://ollama.com/download) for your operating system. Then download the model only if your computer has enough disk space and memory. If it does not, use a cloud option from the model-provider guide instead:
-
-```bash
-ollama pull qwen2.5-coder:7b
-# In a separate terminal:
-ollama serve
-```
-
-For Vertex AI Gemini or the OpenAI API, follow [Model providers: choose one for the live demonstration](model-providers.md). It lists the exact optional dependency and credential commands. Do not put API keys in repository files.
+Follow [Model providers: choose one for the live demonstration](model-providers.md). It gives separate macOS/Linux and Windows PowerShell configuration commands for Ollama, Vertex AI Gemini, and OpenAI. It also explains how to start the local Ollama service on each operating system. Do not put API keys in repository files.
 
 ## 4. Run the starting unit-test checkpoint
 
 ```bash
-pytest -q
+python -m pytest -q
 ```
 
 Expected starting point: **18 passed, 10 failed**. The 10 failures are clear `NotImplementedError` messages from the student TODOs. This is expected. Exercises 1 and 2 use `ScriptedClient`, so this checkpoint needs no model, API key, Internet connection, or Docker daemon.
