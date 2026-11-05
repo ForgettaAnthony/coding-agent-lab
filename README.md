@@ -109,9 +109,9 @@ Before Exercise 1, follow [Setup and reproducibility](docs/setup.md). It gives t
 
 ## Required 2.5-hour path
 
-1. Complete Exercise 1 and its tool checkpoint.
-2. Complete Exercise 2 and its deterministic agent-loop checkpoint.
-3. Complete Exercise 3 and launch the UI.
+1. Complete [Exercise 1: Safe tools](docs/exercises/01-safe-tools.md) and its tool checkpoint.
+2. Complete [Exercise 2: Agent loop](docs/exercises/02-agent-loop.md) and its deterministic agent-loop checkpoint.
+3. Complete [Exercise 3: Gradio UI adapter](docs/exercises/03-gradio-ui.md) and launch the UI.
 4. Use the provider configured during setup, or choose one [model provider for the live final demonstration](docs/model-providers.md).
 
 The GitHub-research and Langfuse sections are optional extensions; skip them on the first pass through the lab.
