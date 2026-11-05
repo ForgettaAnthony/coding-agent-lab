@@ -29,7 +29,7 @@ For further reading, see the [Ollama chat API](https://docs.ollama.com/api/chat)
 
 ## Ollama: default local option
 
-Use the default `qwen2.5-coder:7b` only when your computer has sufficient disk space and memory. This lab uses Ollama's **local** API, so it does not require an API key. Follow the [Ollama local quickstart](https://docs.ollama.com/quickstart) to install and open Ollama on your operating system, then download the model:
+`qwen2.5-coder:7b` is the default example, not a requirement. This lab uses Ollama's **local** API, so it does not require an API key. Follow the [Ollama local quickstart](https://docs.ollama.com/quickstart) to install and open Ollama on your operating system, then download the default model:
 
 ```bash
 ollama pull qwen2.5-coder:7b
@@ -37,9 +37,18 @@ ollama list
 python main.py repair evals/arithmetic --provider ollama --model qwen2.5-coder:7b
 ```
 
+You may substitute any model identifier from the [Ollama model library](https://ollama.com/library), including a different size or a different coding or instruction-following chat model. Pull the selected model first, then use exactly the same identifier after `--model`. For example, a student with limited resources can try a smaller available tag such as `qwen2.5-coder:1.5b`:
+
+```bash
+ollama pull qwen2.5-coder:1.5b
+python main.py repair evals/arithmetic --provider ollama --model qwen2.5-coder:1.5b
+```
+
+Choose a text/chat model, not an embedding-only model. Smaller models usually use less disk space and memory, but may be less reliable at following the JSON action contract or completing a multi-step repair. The deterministic exercise checkpoints do not depend on any local model.
+
 `ollama list` verifies that the local Ollama service is reachable. On macOS and Windows, open the Ollama application if it is not running. On Linux, start it in another terminal with `ollama serve`. Then rerun `ollama list` before starting the repair.
 
-To select a different default for the UI, set `OLLAMA_MODEL` in the terminal that will run the UI.
+To select a different default for the UI, set `OLLAMA_MODEL` to the model identifier that you pulled in the terminal that will run the UI.
 
 **macOS/Linux**
 
