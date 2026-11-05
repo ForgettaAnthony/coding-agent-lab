@@ -19,6 +19,26 @@ Connect the presentation adapter to the existing repair use case. The interface 
 
 The CLI and UI must not create Docker commands, build prompts, or dispatch tools. Those responsibilities remain in lower layers.
 
+### Vibe-coding handoff: Gradio adapter
+
+If you use Codex, Claude, Cursor, or another coding assistant, give it this task after it has read `adapters/gradio_ui.py`, `core/models.py`, and `core/repair_service.py`:
+
+```text
+Modify only the repair(project_path) function in adapters/gradio_ui.py.
+
+Call build_repair_service().repair(project_path). Format the returned
+RepairResult for the existing Gradio components and return exactly four values
+in this order:
+1. the execution trace as text;
+2. the changed source files as readable text, or "No files changed.";
+3. the sandboxed test output as text; and
+4. a path to a ZIP archive of result.workspace.
+
+Do not modify create_demo, add Docker commands, build prompts, dispatch tools,
+or change any tests or other files. Reuse the imports already provided in this
+file.
+```
+
 ## Checkpoint
 
 Run from the repository root:

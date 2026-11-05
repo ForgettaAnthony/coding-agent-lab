@@ -44,6 +44,21 @@ Temperature is provider configuration, so it belongs at the outer edge of the ar
 
 4. Use the same provider and model for every run in this exercise. Choose a provider that you have already configured for the final demonstration.
 
+### Vibe-coding handoff: controlled experiment
+
+If you use a coding assistant to help conduct the experiment, give it this task:
+
+```text
+Do not modify source code, prompts, tests, Docker settings, or model-provider
+configuration files.
+
+First run pytest -q tests/test_model_temperature.py. Then run the supplied
+repair command for temperature 0.0 and 0.8 using the same fixture, provider,
+model identifier, repository revision, and step budget. Save each terminal
+trace. Summarize only observed differences in the traces and final test
+results. Do not claim that one temperature is better from these few runs.
+```
+
 ## Research question and controls
 
 Use this question:
