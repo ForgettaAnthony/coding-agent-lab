@@ -1,23 +1,68 @@
-# Task 6: Add the Gradio interface, 20 minutes
+# Task 6: Show a repair in a small web page, 20 minutes
 
 [Back to the activity overview](../README.md)
 
-Create `adapters/gradio_ui.py`. It is a presentation layer, not another repair agent.
+## What this task gives the agent
 
-The page must:
+The web page does not repair code itself. It is another way for a person to
+start the same repair service used by the terminal command. A student selects
+one supplied project, starts the repair, and sees the trace and result that
+already come from the existing service.
 
-- offer only the five supplied evaluation projects as project choices;
-- start the same repair service used by the terminal;
-- show the execution trace, changed file content, and final test output; and
-- provide a ZIP file containing the repaired disposable workspace.
+```mermaid
+flowchart LR
+    person["Student selects\none supplied project"] --> ui["gradio_ui.py\nshow controls and results"]
+    ui --> service["Existing RepairService"]
+    service --> agent["Existing RepairAgent"]
+    agent --> result["Trace\nchanged files\ntest result"]
+    result --> ui
 
-Do not add a file-upload component. Do not build prompts, call Docker directly, or make policy decisions in the UI.
+    classDef personBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
+    classDef uiBox fill:#dbeafe,stroke:#2563eb,color:#172554
+    classDef serviceBox fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef agentBox fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+    classDef resultBox fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
 
-Add a `ui` command to `main.py`:
-
-```bash
-python main.py ui
+    class person personBox
+    class ui uiBox
+    class service serviceBox
+    class agent agentBox
+    class result resultBox
 ```
+
+The page offers only the five supplied `evals/` projects. There is no upload
+box and no free-form path field, so a browser user cannot give the agent an
+arbitrary project. The page must not build prompts, call Docker, or make
+repair-policy decisions.
+
+## Prompt for your coding assistant
+
+Copy this prompt into your coding assistant. It defines the complete scope of
+this task.
+
+```text
+Implement adapters/gradio_ui.py and make only the small change needed in
+main.py to provide `python main.py ui`. Reuse the existing RepairService; the
+UI must not create a second repair loop or call Docker directly.
+
+In adapters/gradio_ui.py, provide a create_demo function that builds a Gradio
+page. It must offer a dropdown containing exactly arithmetic,
+balanced_brackets, median, multi_function, and unique_words. When the user
+starts a repair, call the existing service for that selected case. Display the
+visible trace, changed relative files with their changed text, and final test
+output. Also provide a ZIP download of the repaired disposable workspace.
+
+Use the scripted provider by default so the page works without a model
+download. Do not add a file-upload component, a free-form project path, prompt
+creation, Docker calls, a shell tool, Internet access, or new Python packages.
+Keep repair decisions in core/ and add concise docstrings.
+```
+
+### A term used in the prompt
+
+A **presentation layer** receives input and displays output. In this task,
+Gradio is the presentation layer: it shows the repair service's result but
+does not decide what the model may do.
 
 ## Checkpoint
 
@@ -26,13 +71,16 @@ python -c "from adapters.gradio_ui import create_demo; create_demo(); print('Gra
 python main.py ui
 ```
 
-Expected outcome: the first command builds the interface. In the browser, selecting `arithmetic` produces the same kind of trace and result as the terminal command.
+Expected outcome: the first command builds the interface. The second starts a
+local web server and prints an address to open in a browser. Select
+`arithmetic` and confirm that the page shows the same kind of trace and result
+as the scripted terminal command.
 
 ## Where to go next
 
 Choose one of the following paths:
 
-- Continue to [Task 7: Run a live Ollama repair](07-live-ollama.md) if you
-  want to try an optional local model.
-- Continue to [Task 8: Final demonstration](08-final-demonstration.md) if you
-  are using the scripted provider only.
+- Continue to [Task 7: Try a real local model with Ollama](07-live-ollama.md)
+  if you want to try a local model.
+- Continue to [Task 8: Prepare the final demonstration](08-final-demonstration.md)
+  if you are using the scripted provider only.

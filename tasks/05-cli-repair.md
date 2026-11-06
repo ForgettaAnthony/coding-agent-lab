@@ -90,4 +90,4 @@ final test result. The original files under `evals/` remain unchanged.
 
 ## Where to go next
 
-Open [Task 6: Add the Gradio interface](06-gradio-ui.md).
+Open [Task 6: Show a repair in a small web page](06-gradio-ui.md).
