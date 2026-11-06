@@ -149,8 +149,6 @@ The starter already provides the guide, icon, license, ignore rules, and `evals/
 ```text
 coding-agent-lab/
 ├── README.md                          # this guide in the student release
-├── docs/assets/
-│   └── python-repair-agent-icon.png    # activity icon
 ├── requirements.txt
 ├── pytest.ini                         # limits host pytest to tests/ only
 ├── main.py                            # terminal entry point
