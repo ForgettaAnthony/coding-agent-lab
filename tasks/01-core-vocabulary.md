@@ -20,6 +20,16 @@ flowchart LR
     agent -->|"read, edit, test"| tools
     tools -->|"file or test observation"| agent
     agent -->|"final result"| results
+
+    classDef repairAgent fill:#dbeafe,stroke:#2563eb,color:#172554
+    classDef modelClient fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef repairTools fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+    classDef sharedResults fill:#f3e8ff,stroke:#9333ea,color:#581c87
+
+    class agent repairAgent
+    class model modelClient
+    class tools repairTools
+    class results sharedResults
 ```
 
 `core/models.py` defines the structured information that moves through this
