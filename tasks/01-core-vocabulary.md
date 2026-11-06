@@ -29,7 +29,7 @@ an API call, starts Docker, or displays a web page.
 
 | File | Why it exists | What you create now |
 | --- | --- | --- |
-| `core/models.py` | Every part of the agent needs the same names and shapes for results. This avoids passing loose dictionaries with inconsistent keys. | Small typed data objects for a test result, a model action, and a final repair result. |
+| `core/models.py` | Every part of the agent needs the same names and shapes for results. This avoids passing loose dictionaries with inconsistent keys. | Three small `@dataclass` containers for a test result, a model action, and a final repair result. |
 | `core/ports.py` | The repair loop should work with either a scripted client or Ollama, and with real tools or test doubles. | Descriptions of a chat client, repair tools, and an optional trace recorder. |
 
 A Python `Protocol` is a type-level promise: it says which methods an object
@@ -41,7 +41,9 @@ provide concrete scripted and Ollama clients that satisfy that promise.
 
 Create `core/models.py` and `core/ports.py` only.
 
-Create small data objects for:
+In `core/models.py`, create three small Python classes using `@dataclass`.
+Each class is simply a named container for related information, similar to a
+short form with labelled fields. Create one class for:
 
 - a test result: `passed`, `output`, and `returncode`;
 - an action requested by the model: `tool`, arguments, and optional public `summary`; and
@@ -64,8 +66,8 @@ change small: create only the shared vocabulary and contracts that later tasks
 will use.
 
 ```text
-Create core/models.py and core/ports.py only. Define minimal typed data
-objects for a repair result, test result, and model action. Define interfaces
+Create core/models.py and core/ports.py only. Use @dataclass to define three
+small named containers: repair result, test result, and model action. Define interfaces
 for a chat client and the three repair tools: read_file, edit_file, run_tests.
 Use only the standard library and core modules. Do not import adapters,
 Docker, Gradio, or an HTTP client. Add concise docstrings.
