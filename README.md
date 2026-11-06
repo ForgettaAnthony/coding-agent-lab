@@ -144,12 +144,12 @@ Do not try to understand or implement this whole tree now. It is a map for the a
 | `evals/` | Hold the supplied buggy projects. The agent reads copies of these files but never changes the originals. |
 | `tests/` | Hold the tests you write to prove that your tools and repair loop behave safely. |
 
-The starter already provides the guide, icon, license, ignore rules, and `evals/`. You create the remaining files during the activity. The small `__init__.py` files simply tell Python that a folder can be imported as a package.
+The starter already provides the guide, icon, license, ignore rules, `requirements.txt`, and `evals/`. You create the remaining files during the activity. The small `__init__.py` files simply tell Python that a folder can be imported as a package.
 
 ```text
 coding-agent-lab/
 ├── README.md                          # this guide in the student release
-├── requirements.txt
+├── requirements.txt                   # supplied base dependencies
 ├── pytest.ini                         # limits host pytest to tests/ only
 ├── main.py                            # terminal entry point
 ├── bootstrap.py                       # assembles the application
@@ -195,7 +195,7 @@ cd coding-agent-lab
 git switch -c build-repair-agent
 ```
 
-Ask your coding assistant to create the target folders, empty package files, `requirements.txt`, and `pytest.ini`. The required packages are `pytest` and `gradio`; use Python 3.11 or newer. `pytest.ini` must set `testpaths = tests` so that a host pytest command never discovers or executes tests inside `evals/`.
+The starter already provides `requirements.txt` with `pytest` and `gradio`. Ask your coding assistant to create the target folders, empty package files, and `pytest.ini`. Use Python 3.11 or newer. `pytest.ini` must set `testpaths = tests` so that a host pytest command never discovers or executes tests inside `evals/`.
 
 ```ini
 [pytest]
