@@ -85,4 +85,4 @@ model download or live model call is required.
 
 ## Where to go next
 
-Open [Task 4: Implement the repair loop](04-repair-loop.md).
+Open [Task 4: Build the repair loop](04-repair-loop.md).

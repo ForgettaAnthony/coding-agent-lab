@@ -236,7 +236,7 @@ Complete the tasks in this order. Task 7 is optional; Task 8 can use the scripte
 2. [Task 1: Define the agent's small vocabulary, 15 minutes](tasks/01-core-vocabulary.md)
 3. [Task 2: Build the safe workspace and tools, 25 minutes](tasks/02-sandbox-tools.md)
 4. [Task 3: Prepare prompts and a test model, 15 minutes](tasks/03-prompts-and-clients.md)
-5. [Task 4: Implement the repair loop, 40 minutes](tasks/04-repair-loop.md)
+5. [Task 4: Build the repair loop, 40 minutes](tasks/04-repair-loop.md)
 6. [Task 5: Assemble the command-line repair, 15 minutes](tasks/05-cli-repair.md)
 7. [Task 6: Add the Gradio interface, 20 minutes](tasks/06-gradio-ui.md)
 8. [Task 7: Run a live Ollama repair, 10 minutes, optional](tasks/07-live-ollama.md)
