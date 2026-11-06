@@ -1,4 +1,8 @@
-# Build Your Own Python Repair Agent
+<h1 align="center">Build Your Own Python Repair Agent</h1>
+
+<p align="center">
+  <img src="docs/assets/python-repair-agent-icon.png" width="180" alt="A repair agent fixes a code bug and verifies the repair">
+</p>
 
 ## A guided, from-scratch activity
 
@@ -23,7 +27,7 @@ The folder arrangement is deliberate. Keep repair decisions separate from model 
 
 ## What the student version contains
 
-The student release should contain this guide, `LICENSE`, `.gitignore`, and the two fixed evaluation projects in `evals/`. It must not contain an implemented agent, hidden tests, model keys, or a completed Docker runner. Keep the working implementation in the instructor repository only.
+The student release should contain this guide, `LICENSE`, `.gitignore`, the repair-agent icon, and the two fixed evaluation projects in `evals/`. It must not contain an implemented agent, hidden tests, model keys, or a completed Docker runner. Keep the working implementation in the instructor repository only.
 
 The supplied evaluation projects are:
 
@@ -84,6 +88,8 @@ Create this structure during the activity. `__init__.py` files make the folders 
 ```text
 coding-agent-lab/
 ├── README.md                          # this guide in the student release
+├── docs/assets/
+│   └── python-repair-agent-icon.png    # activity icon
 ├── requirements.txt
 ├── pytest.ini                         # limits host pytest to tests/ only
 ├── main.py                            # terminal entry point
