@@ -27,17 +27,20 @@ The folder arrangement is deliberate. Keep repair decisions separate from model 
 
 ## What the student version contains
 
-The student release should contain this guide, `LICENSE`, `.gitignore`, the repair-agent icon, and the two fixed evaluation projects in `evals/`. It must not contain an implemented agent, hidden tests, model keys, or a completed Docker runner. Keep the working implementation in the instructor repository only.
+The student release should contain this guide, `LICENSE`, `.gitignore`, the repair-agent icon, and the five fixed evaluation projects in `evals/`. It must not contain an implemented agent, hidden tests, model keys, or a completed Docker runner. Keep the working implementation in the instructor repository only.
 
 The supplied evaluation projects are:
 
 ```text
 evals/
-├── arithmetic/       # small calculator bug and pytest test
-└── multi_function/   # several text utility functions and pytest tests
+├── arithmetic/          # small calculator bug
+├── balanced_brackets/   # matching-type boundary bug
+├── median/              # even-length boundary bug
+├── multi_function/      # several text utility functions
+└── unique_words/        # order-preservation bug
 ```
 
-Do not edit files in `evals/`. Your repair agent must copy the selected project into a disposable workspace before it changes anything.
+Do not edit files in `evals/`. Your repair agent must copy the selected project into a disposable workspace before it changes anything. The cases are teaching-sized fixtures, not HumanEval+ tasks. They follow the same useful evaluation habit: test ordinary behavior and a boundary or semantic case that a superficial repair can miss.
 
 ## How to use a vibe-coding assistant
 
@@ -115,7 +118,10 @@ coding-agent-lab/
 │       └── repair_tools.py
 ├── evals/                             # supplied, never modified
 │   ├── arithmetic/
-│   └── multi_function/
+│   ├── balanced_brackets/
+│   ├── median/
+│   ├── multi_function/
+│   └── unique_words/
 └── tests/                             # tests you write for your agent
     ├── test_tools.py
     └── test_agent.py
@@ -368,7 +374,7 @@ Create `adapters/gradio_ui.py`. It is a presentation layer, not another repair a
 
 The page must:
 
-- offer only `arithmetic` and `multi_function` as project choices;
+- offer only the five supplied evaluation projects as project choices;
 - start the same repair service used by the terminal;
 - show the execution trace, changed file content, and final test output; and
 - provide a ZIP file containing the repaired disposable workspace.
@@ -423,7 +429,7 @@ Demonstrate these five points:
 - [ ] The agent accepts only strict JSON actions and has a fixed stop budget.
 - [ ] `python main.py repair evals/arithmetic --provider scripted` completes a repair.
 - [ ] The original `evals/` projects are unchanged after every repair.
-- [ ] `python main.py ui` exposes only the two supplied projects.
+- [ ] `python main.py ui` exposes only the five supplied projects.
 - [ ] Your Git history has a commit after each completed stage.
 
 When you are finished, you will have practiced a central software-engineering idea for AI systems: the model proposes a next step, while ordinary, testable program code controls what can happen, records evidence, and decides whether the result is accepted.
