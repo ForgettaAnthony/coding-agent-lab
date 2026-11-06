@@ -1,13 +1,17 @@
-# Task 3: Add predictable prompts and model clients, 15 minutes
+# Task 3: Add prompts and model clients, 15 minutes
 
 [Back to the activity overview](../README.md)
 
 ## Why this task comes next
 
-The future repair loop needs one predictable way to ask for a next action and
-receive a reply. Prompts provide the case context and restrict the response to
-a small JSON action. Model clients deliver that request either to a repeatable
-scripted client or to a local Ollama model.
+The future repair loop sends the model a request containing the selected
+project and the permitted actions. The model replies with one requested action,
+for example `{"tool":"run_tests"}`. These messages do not contain the same
+information: the request gives context, while the reply chooses a next step.
+A fixed reply shape lets ordinary Python code check the action and call an
+allowed tool instead of trying to interpret free-form prose. Prompts build the
+request; model clients deliver it to either a repeatable scripted client or a
+local Ollama model.
 
 ```mermaid
 flowchart LR
