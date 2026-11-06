@@ -40,7 +40,16 @@ flowchart LR
     verify -->|Tests pass| result["7. Return trace, changed files, and result"]
 ```
 
-The required evidence order is: inspect local code, reproduce the failure with a sandboxed test, make a focused edit, then verify with a later sandboxed test. If the model sends an invalid action or the decision budget ends, the agent stops and reports the failure instead of guessing.
+Follow this evidence order:
+
+1. 🟦 **Inspect local code.** Read the relevant test and source files in the copied workspace.
+2. 🟨 **Reproduce the bug.** Run a sandboxed test and observe a failing result before editing.
+3. 🟧 **Make one focused edit.** Change only the copied workspace file needed to address the observed failure.
+4. 🟩 **Verify the repair.** Run a later sandboxed test and accept the repair only if it passes.
+
+**Sandboxed test** means `pytest` runs inside a short-lived Docker container with networking disabled. It receives only the disposable workspace copy, not the original `evals/` project or the rest of the host computer.
+
+If the model sends an invalid action or the decision budget ends, the agent stops and reports the failure instead of guessing.
 
 ## Before you begin
 
