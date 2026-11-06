@@ -25,6 +25,23 @@ Build a repair agent that:
 
 The folder arrangement is deliberate. Keep repair decisions separate from model HTTP calls, Docker commands, file access, and the web page. This makes the repair logic testable with a fake model and lets you replace a technology without rewriting the repair loop.
 
+## Repair workflow at a glance
+
+The agent works on a copy, never directly on `evals/`. The model proposes one action at a time; the surrounding Python program supplies the case context, limits the available actions, records the observations, and decides when to stop.
+
+```mermaid
+flowchart LR
+    select["1. Select an eval project"] --> copy["2. Copy it to a workspace"]
+    copy --> inspect["3. Read the test and source code"]
+    inspect --> reproduce["4. Run tests in Docker"]
+    reproduce -->|Tests fail| edit["5. Edit the workspace copy"]
+    edit --> verify["6. Run tests in Docker again"]
+    verify -->|Tests still fail| inspect
+    verify -->|Tests pass| result["7. Return trace, changed files, and result"]
+```
+
+The required evidence order is: inspect local code, reproduce the failure with a sandboxed test, make a focused edit, then verify with a later sandboxed test. If the model sends an invalid action or the decision budget ends, the agent stops and reports the failure instead of guessing.
+
 ## Before you begin
 
 Have the following ready before the activity:
