@@ -25,3 +25,7 @@ python -m compileall -q core adapters/models
 ```
 
 No live model call is required for this task.
+
+## Where to go next
+
+Open [Task 4: Implement the repair loop](04-repair-loop.md).

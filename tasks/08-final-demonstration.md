@@ -23,3 +23,8 @@ Demonstrate these five points:
 - [ ] Your Git history has a commit after each completed task.
 
 When you are finished, you will have practiced a central software-engineering idea for AI systems: the model proposes a next step, while ordinary, testable program code controls what can happen, records evidence, and decides whether the result is accepted.
+
+## Where to go next
+
+Return to the [activity overview](../README.md), complete the submission
+checklist, and prepare your demonstration.

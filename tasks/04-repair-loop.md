@@ -57,3 +57,7 @@ python -m pytest -q
 ```
 
 Expected outcome: all tests you wrote pass. The tests must not contact Ollama or execute generated project code on the host.
+
+## Where to go next
+
+Open [Task 5: Add the command-line repair workflow](05-cli-repair.md).

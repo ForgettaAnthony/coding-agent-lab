@@ -71,3 +71,7 @@ git status --short
 At this point, do not run `pytest` from the repository root: the supplied
 evaluation tests are intentionally buggy and must run only in Docker. Commit
 the file structure and dependency file before starting Task 1.
+
+## Where to go next
+
+Open [Task 1: Define the core vocabulary](01-core-vocabulary.md).

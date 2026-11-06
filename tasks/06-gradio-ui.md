@@ -27,3 +27,12 @@ python main.py ui
 ```
 
 Expected outcome: the first command builds the interface. In the browser, selecting `arithmetic` produces the same kind of trace and result as the terminal command.
+
+## Where to go next
+
+Choose one of the following paths:
+
+- Continue to [Task 7: Run a live Ollama repair](07-live-ollama.md) if you
+  want to try an optional local model.
+- Continue to [Task 8: Final demonstration](08-final-demonstration.md) if you
+  are using the scripted provider only.

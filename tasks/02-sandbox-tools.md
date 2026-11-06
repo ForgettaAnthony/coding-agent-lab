@@ -48,3 +48,7 @@ docker build -t coding-agent-lab-runner adapters/sandbox
 ```
 
 Expected outcome: your unit tests pass, and Docker builds the runner image. Do not run an evaluation project with host Python to test this task.
+
+## Where to go next
+
+Open [Task 3: Define prompts and model clients](03-prompts-and-clients.md).

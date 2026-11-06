@@ -24,3 +24,7 @@ python main.py repair evals/multi_function --provider scripted
 ```
 
 Expected outcome: each command prints a trace that shows local inspection, a failing test, an edit, and a passing test. The original files under `evals/` remain unchanged.
+
+## Where to go next
+
+Open [Task 6: Add the Gradio interface](06-gradio-ui.md).

@@ -33,3 +33,7 @@ Docker, Gradio, or an HTTP client. Add concise docstrings.
 ```bash
 python -m compileall -q core
 ```
+
+## Where to go next
+
+Open [Task 2: Build the sandbox tools](02-sandbox-tools.md).
