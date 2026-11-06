@@ -25,6 +25,28 @@ Build a repair agent that:
 
 The folder arrangement is deliberate. Keep repair decisions separate from model HTTP calls, Docker commands, file access, and the web page. This makes the repair logic testable with a fake model and lets you replace a technology without rewriting the repair loop.
 
+## Before you begin
+
+Have the following ready before the activity:
+
+- A GitHub account, Git, and permission to fork and push to your own repository.
+- Python 3.11 or newer.
+- Docker Desktop installed. Start it before the sandbox exercise; `docker info` must succeed.
+- A code editor and one vibe-coding assistant, such as Codex, Claude Code, or Cursor.
+- A browser and Internet connection to fork the repository and install Python packages.
+
+Check your local tools before class:
+
+```bash
+git --version
+python3 --version       # macOS or Linux
+docker info
+```
+
+In Windows PowerShell, use `py --version` instead of `python3 --version`.
+
+You do **not** need Ollama, a large local model, a cloud-model account, or an API key for the required build and scripted checkpoints. They are needed only for the optional live-model demonstration in Step 7. If you choose that demonstration, install Ollama and one coding model with enough local disk space, or add a cloud-model adapter using your own approved credentials.
+
 ## Current repository structure
 
 The student release should contain this guide, `LICENSE`, `.gitignore`, the repair-agent icon, and the five fixed evaluation projects in `evals/`. It must not contain an implemented agent, hidden tests, model keys, or a completed Docker runner. Keep the working implementation in the instructor repository only.
