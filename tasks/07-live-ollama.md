@@ -10,13 +10,15 @@ reply text from a real local model instead. Everything else stays the same:
 the repair loop still validates every reply, the model still has only the three
 permitted actions, and tests still run inside Docker.
 
+### Flow of this task
+
 ```mermaid
 flowchart LR
-    prompts["Existing prompts"] --> ollamaClient["ollama.py\nOllamaClient"]
-    ollamaClient --> ollama["Ollama on your computer\nlocal model"]
-    ollama --> reply["Reply text"]
-    reply --> agent["Existing RepairAgent\nchecks every reply"]
-    agent --> sandbox["Existing safe tools\nand Docker tests"]
+    prompts["(1) Existing prompts"] --> ollamaClient["(2) ollama.py\nOllamaClient"]
+    ollamaClient --> ollama["(3) Ollama on your computer\nlocal model"]
+    ollama --> reply["(4) Reply text"]
+    reply --> agent["(5) Existing RepairAgent\nchecks every reply"]
+    agent --> sandbox["(6) Existing safe tools\nand Docker tests"]
 
     classDef promptBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
     classDef clientBox fill:#dbeafe,stroke:#2563eb,color:#172554
@@ -27,7 +29,7 @@ flowchart LR
     class prompts promptBox
     class ollamaClient clientBox
     class ollama modelBox
-    class reply agentBox
+    class reply modelBox
     class agent agentBox
     class sandbox sandboxBox
 ```

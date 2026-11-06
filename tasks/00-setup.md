@@ -2,6 +2,27 @@
 
 [Back to the activity overview](../README.md)
 
+## Setup flow
+
+```mermaid
+flowchart LR
+    fork["(1) Fork the course repository"] --> clone["(2) Clone your fork"]
+    clone --> branch["(3) Create your work branch"]
+    branch --> structure["(4) Create the initial folders\nand pytest.ini"]
+    structure --> environment["(5) Create the Python environment\nand install dependencies"]
+    environment --> check["(6) Run the setup checkpoint"]
+
+    classDef gitBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
+    classDef setupBox fill:#dbeafe,stroke:#2563eb,color:#172554
+    classDef environmentBox fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef checkBox fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+
+    class fork,clone,branch gitBox
+    class structure setupBox
+    class environment environmentBox
+    class check checkBox
+```
+
 ## 1. Create your working copy
 
 Open the course repository on GitHub and select **Fork**. GitHub creates a copy

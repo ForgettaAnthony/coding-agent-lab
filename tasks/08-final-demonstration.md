@@ -10,12 +10,14 @@ uses the scripted provider, so every group can show the same repair workflow.
 This task introduces no new code. Fix any earlier checkpoint that fails before
 you begin the demonstration.
 
+### Flow of this task
+
 ```mermaid
 flowchart LR
-    trace["1. Scripted terminal trace\nread → failing test → edit → passing test"] --> copy["2. Disposable workspace\ncontains the repair"]
-    copy --> original["3. Original evals project\nremains unchanged"]
-    original --> tests["4. Your agent tests\npass"]
-    tests --> ui["5. Web page shows\nthe same workflow"]
+    trace["(1) Scripted terminal trace\nread → failing test → edit → passing test"] --> copy["(2) Disposable workspace\ncontains the repair"]
+    copy --> original["(3) Original evals project\nremains unchanged"]
+    original --> tests["(4) Your agent tests\npass"]
+    tests --> ui["(5) Web page shows\nthe same workflow"]
 
     classDef traceBox fill:#dbeafe,stroke:#2563eb,color:#172554
     classDef workspaceBox fill:#ffedd5,stroke:#ea580c,color:#7c2d12

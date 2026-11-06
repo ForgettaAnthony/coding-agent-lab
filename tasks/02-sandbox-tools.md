@@ -8,14 +8,16 @@ The repair agent will eventually ask to read a file, edit a file, or run tests.
 Those requests must operate on a disposable copy, not on the supplied project
 in `evals/` or on the host computer. This task creates that safety boundary.
 
+### Flow of this task
+
 ```mermaid
 flowchart LR
-    agent["Future repair agent"] --> tools["repair_tools.py\nthree permitted actions"]
-    source["evals project\nnever modified"] --> runner["runner.py\nmake a temporary copy"]
-    tools --> workspace["Disposable workspace"]
+    agent["(4) Future repair agent"] --> tools["(5) repair_tools.py\nthree permitted actions"]
+    source["(1) evals project\nnever modified"] --> runner["(2) runner.py\nmake a temporary copy"]
+    tools --> workspace["(3) Disposable workspace"]
     runner --> workspace
-    workspace --> docker["Docker\npytest with no network"]
-    docker --> result["Test result"]
+    workspace --> docker["(6) Docker\npytest with no network"]
+    docker --> result["(7) Test result"]
     result --> tools
     tools --> agent
 

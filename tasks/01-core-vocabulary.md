@@ -8,12 +8,14 @@ You will build the repair loop in Task 4. That loop needs to talk to a model,
 ask tools to read, edit, and test code, and return a result. Before building
 those parts, give them a common vocabulary and a small set of promises.
 
+### Flow of this task
+
 ```mermaid
 flowchart LR
-    agent["Repair agent\nTask 4"]
-    model["Scripted test model\nTask 3"]
-    tools["Safe repair tools\nTask 2"]
-    results["Shared results\nmodels.py"]
+    agent["(1) Repair agent\nTask 4"]
+    model["(2) Scripted test model\nTask 3"]
+    tools["(3) Safe repair tools\nTask 2"]
+    results["(4) Shared results\nmodels.py"]
 
     agent -->|"chat(messages)"| model
     model -->|"one requested action"| agent

@@ -9,13 +9,15 @@ to start a repair. This task adds one terminal command. The command chooses an
 allowed evaluation project, creates its disposable copy, runs the existing
 agent, and prints what happened.
 
+### Flow of this task
+
 ```mermaid
 flowchart LR
-    command["Terminal command\nrepair evals/arithmetic"] --> main["main.py\nread command options\nand print results"]
-    main --> bootstrap["bootstrap.py\nconnect existing pieces"]
-    bootstrap --> service["repair_service.py\nselect and copy one eval"]
-    service --> agent["RepairAgent\nfrom Task 4"]
-    agent --> output["Visible trace\nchanged files\ntest result"]
+    command["(1) Terminal command\nrepair evals/arithmetic"] --> main["(2) main.py\nread command options\nand print results"]
+    main --> bootstrap["(3) bootstrap.py\nconnect existing pieces"]
+    bootstrap --> service["(4) repair_service.py\nselect and copy one eval"]
+    service --> agent["(5) RepairAgent\nfrom Task 4"]
+    agent --> output["(6) Visible trace\nchanged files\ntest result"]
 
     classDef commandBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
     classDef commandLineBox fill:#dbeafe,stroke:#2563eb,color:#172554

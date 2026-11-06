@@ -15,12 +15,14 @@ can be `{"tool":"read_file","path":"test_calculator.py"}` and the second
 can be `{"tool":"run_tests"}`. Because the answers are prepared, every test
 run follows the same sequence.
 
+### Flow of this task
+
 ```mermaid
 flowchart LR
-    context["Selected project\nand file list"] --> prompts["prompts.py\nprepare the message"]
-    prompts --> scripted["scripted.py\nreturn the next answer card"]
-    scripted --> reply["Reply text"]
-    reply --> loop["Repair loop\nTask 4"]
+    context["(1) Selected project\nand file list"] --> prompts["(2) prompts.py\nprepare the message"]
+    prompts --> scripted["(3) scripted.py\nreturn the next answer card"]
+    scripted --> reply["(4) Reply text"]
+    reply --> loop["(5) Repair loop\nTask 4"]
 
     classDef contextBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
     classDef promptBox fill:#dbeafe,stroke:#2563eb,color:#172554

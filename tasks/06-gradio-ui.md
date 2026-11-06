@@ -9,12 +9,14 @@ start the same repair service used by the terminal command. A student selects
 one supplied project, starts the repair, and sees the trace and result that
 already come from the existing service.
 
+### Flow of this task
+
 ```mermaid
 flowchart LR
-    person["Student selects\none supplied project"] --> ui["gradio_ui.py\nshow controls and results"]
-    ui --> service["Existing RepairService"]
-    service --> agent["Existing RepairAgent"]
-    agent --> result["Trace\nchanged files\ntest result"]
+    person["(1) Student selects\none supplied project"] --> ui["(2) gradio_ui.py\nshow controls and results"]
+    ui --> service["(3) Existing RepairService"]
+    service --> agent["(4) Existing RepairAgent"]
+    agent --> result["(5) Trace\nchanged files\ntest result"]
     result --> ui
 
     classDef personBox fill:#f3e8ff,stroke:#9333ea,color:#581c87

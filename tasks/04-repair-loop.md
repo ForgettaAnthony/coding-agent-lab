@@ -13,17 +13,19 @@ Each turn of the loop is deliberately small: ask for one action, check it, run
 at most one permitted tool, then show the result to the model before asking
 again.
 
+### Flow of this task
+
 ```mermaid
 flowchart LR
-    start["Project context"] --> ask["Ask for one\nnext action"]
-    ask --> reply["Model reply text"]
-    reply --> check["RepairAgent checks\nformat and policy"]
-    check -->|"valid"| tool["Run one safe tool"]
-    tool --> observation["Tool observation"]
-    observation --> history["Add result to\nconversation history"]
-    history --> decision{"Tests pass?\nor budget used?"}
+    start["(1) Project context"] --> ask["(2) Ask for one\nnext action"]
+    ask --> reply["(3) Model reply text"]
+    reply --> check["(4) RepairAgent checks\nformat and policy"]
+    check -->|"valid"| tool["(5) Run one safe tool"]
+    tool --> observation["(6) Tool observation"]
+    observation --> history["(7) Add result to\nconversation history"]
+    history --> decision{"(8) Tests pass?\nor budget used?"}
     decision -->|"continue"| ask
-    decision -->|"pass or stop"| result["RepairResult\ntrace and final test result"]
+    decision -->|"pass or stop"| result["(9) RepairResult\ntrace and final test result"]
     check -->|"invalid reply"| result
 
     classDef startBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
