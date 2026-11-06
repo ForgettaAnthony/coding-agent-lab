@@ -84,4 +84,4 @@ Expected outcome: your unit tests pass, and Docker builds the runner image. Do n
 
 ## Where to go next
 
-Open [Task 3: Define prompts and model clients](03-prompts-and-clients.md).
+Open [Task 3: Prepare prompts and a test model](03-prompts-and-clients.md).

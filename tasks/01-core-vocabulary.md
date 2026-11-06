@@ -11,7 +11,7 @@ those parts, give them a common vocabulary and a small set of promises.
 ```mermaid
 flowchart LR
     agent["Repair agent\nTask 4"]
-    model["Model client\nTask 3"]
+    model["Scripted test model\nTask 3"]
     tools["Safe repair tools\nTask 2"]
     results["Shared results\nmodels.py"]
 
@@ -64,8 +64,8 @@ an HTTP client. Add concise docstrings. Do not call an LLM or repair a project.
 
 A Python `Protocol` is a type-level promise: it describes methods an object
 must provide without choosing its implementation. For example, the repair
-agent needs an object with `chat(messages) -> str`; Task 3 later provides
-scripted and Ollama clients that satisfy that promise.
+agent needs an object with `chat(messages) -> str`; Task 3 provides the
+scripted client, while optional Task 7 adds the Ollama client.
 
 ## Checkpoint
 
