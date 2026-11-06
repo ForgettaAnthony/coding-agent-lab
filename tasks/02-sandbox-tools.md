@@ -2,43 +2,76 @@
 
 [Back to the activity overview](../README.md)
 
-Create `adapters/sandbox/Dockerfile`, `runner.py`, `repair_tools.py`, and `tests/test_tools.py`.
+## Why this task comes next
 
-Your Docker image should contain Python, pytest, and a non-root user. The runner must start a short-lived container with networking disabled and run `pytest -q` against the copied workspace. Mount the workspace into the container without giving the container access to the rest of the host filesystem.
+The repair agent will eventually ask to read a file, edit a file, or run tests.
+Those requests must operate on a disposable copy, not on the supplied project
+in `evals/` or on the host computer. This task creates that safety boundary.
 
-`runner.py` has two jobs:
+```mermaid
+flowchart LR
+    agent["Future repair agent"] --> tools["repair_tools.py\nthree permitted actions"]
+    source["evals project\nnever modified"] --> runner["runner.py\nmake a temporary copy"]
+    tools --> workspace["Disposable workspace"]
+    runner --> workspace
+    workspace --> docker["Docker\npytest with no network"]
+    docker --> result["Test result"]
+    result --> tools
+    tools --> agent
 
-1. Copy the chosen `evals/<case>` directory to a newly created temporary workspace.
-2. Run tests in that workspace through Docker and return a structured test result.
+    classDef agentBox fill:#dbeafe,stroke:#2563eb,color:#172554
+    classDef sourceBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
+    classDef toolBox fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+    classDef workspaceBox fill:#fef3c7,stroke:#ca8a04,color:#713f12
+    classDef dockerBox fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef resultBox fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
 
-`repair_tools.py` has three methods:
+    class agent agentBox
+    class source sourceBox
+    class tools toolBox
+    class workspace workspaceBox
+    class runner toolBox
+    class docker dockerBox
+    class result resultBox
+```
 
-| Method | Required behavior |
-| --- | --- |
-| `read_file(path)` | Resolve a relative path inside the workspace and return UTF-8 text. |
-| `edit_file(path, content)` | Resolve safely, write UTF-8 text, and record the changed relative path once. |
-| `run_tests()` | Delegate to the Docker-backed runner and return its test result. |
-
-Write a `safe_path(workspace, requested_path)` helper. It must reject absolute paths and any resolved path outside the workspace. Do not use `subprocess` to run project Python or pytest on the host.
-
-Write tests that prove the following:
-
-1. a normal workspace file can be read;
-2. `../` traversal and absolute paths are rejected;
-3. an edit is written and appears once in `changed_files`; and
-4. `run_tests()` delegates to the runner rather than launching host Python.
+The host program may start Docker, but only Docker may execute evaluation
+project code or `pytest`. The model receives no shell, Internet, upload, or
+arbitrary-path capability.
 
 ## Prompt for your coding assistant
 
+Copy this prompt into your coding assistant. It defines the complete scope of
+this task.
+
 ```text
-Implement only adapters/sandbox/Dockerfile, runner.py, repair_tools.py, and
-tests/test_tools.py. The host may invoke Docker, but it must never execute a
-fixture's Python or pytest directly. Copy a selected eval project into a
-temporary workspace. Enforce workspace-relative paths before every read or
-write. Implement read_file, edit_file, and run_tests only. Do not add a shell
-tool or Internet access. Write focused pytest tests for path containment,
-editing, and delegation to the Docker runner.
+Implement only adapters/sandbox/Dockerfile, adapters/sandbox/runner.py,
+adapters/sandbox/repair_tools.py, and tests/test_tools.py. In the Dockerfile,
+install Python and pytest and run as a non-root user. In runner.py, copy the
+selected evals/<case> directory to a new temporary workspace, then invoke a
+short-lived Docker container with networking disabled to run pytest -q against
+that copy. Mount only the copied workspace into the container. Return a
+structured test result with passed, output, and returncode.
+
+In repair_tools.py, implement a safe_path(workspace, requested_path) helper
+that rejects absolute paths and resolved paths outside the workspace. Implement
+only read_file(path), edit_file(path, content), and run_tests(). Read and write
+UTF-8 files inside the workspace; record each changed relative path once; make
+run_tests delegate to the Docker-backed runner. The host may invoke Docker but
+must never execute fixture Python or pytest directly. Do not add a shell tool,
+Internet access, arbitrary paths, or uploads.
+
+Write focused pytest tests showing: a normal workspace file can be read;
+absolute and ../ paths are rejected; an edit is saved and recorded once; and
+run_tests delegates to the runner rather than launching host Python. Add
+concise docstrings and do not change files outside this task.
 ```
+
+### A safety term used in the prompt
+
+**Path traversal** is an attempt to escape the workspace with a path such as
+`../secret.txt` or an absolute path. `safe_path` must reject it before the
+program reads or writes a file.
 
 ## Checkpoint
 
