@@ -132,9 +132,19 @@ These rules are requirements, not suggestions.
 - Require a failing sandboxed test result before allowing an edit.
 - Keep a short public action summary, not private model reasoning.
 
-## Target project structure
+## A map of the files you will build
 
-Create this structure during the activity. `__init__.py` files make the folders importable Python packages.
+Do not try to understand or implement this whole tree now. It is a map for the activity. Each numbered step below tells you which small group of files to create next and what to check before moving on.
+
+| Location | Why it exists |
+| --- | --- |
+| `main.py` and `bootstrap.py` | Start the application and connect its pieces. |
+| `core/` | Keep the repair decisions, prompts, and result data in one testable place. |
+| `adapters/` | Put technology-specific work here: Ollama, Docker, files, and Gradio. |
+| `evals/` | Hold the supplied buggy projects. The agent reads copies of these files but never changes the originals. |
+| `tests/` | Hold the tests you write to prove that your tools and repair loop behave safely. |
+
+The starter already provides the guide, icon, license, ignore rules, and `evals/`. You create the remaining files during the activity. The small `__init__.py` files simply tell Python that a folder can be imported as a package.
 
 ```text
 coding-agent-lab/
@@ -175,7 +185,7 @@ coding-agent-lab/
     └── test_agent.py
 ```
 
-Files in `core/` must not import anything from `adapters/`. `bootstrap.py` is the only place that chooses concrete implementations and gives them to the repair service.
+One practical rule will keep the project understandable: files in `core/` must not import files from `adapters/`. `bootstrap.py` is the one place that selects the real model, sandbox, and UI pieces and connects them to the repair service.
 
 ## 0. Set up the repository and environment, 10 minutes
 
