@@ -25,7 +25,7 @@ Build a repair agent that:
 
 The folder arrangement is deliberate. Keep repair decisions separate from model HTTP calls, Docker commands, file access, and the web page. This makes the repair logic testable with a fake model and lets you replace a technology without rewriting the repair loop.
 
-## What the student version contains
+## Current repository structure
 
 The student release should contain this guide, `LICENSE`, `.gitignore`, the repair-agent icon, and the five fixed evaluation projects in `evals/`. It must not contain an implemented agent, hidden tests, model keys, or a completed Docker runner. Keep the working implementation in the instructor repository only.
 
