@@ -280,6 +280,10 @@ After the core lab, follow [Optional Langfuse observability: trajectory analysis
 7. Optional: enable GitHub research, show a cited `search_github` observation in the trace, and explain why the returned code is only a hypothesis until local tests pass.
 8. Optional: with approved Langfuse credentials, show the agent, generation, and tool observations for one repair; explain the external data boundary.
 
+## Maintainer
+
+This lab is maintained by [Mahi Begoug](https://github.com/MahiBegoug) ([gm_begoug@esi.dz](mailto:gm_begoug@esi.dz)).
+
 ## License
 
 This lab is available under the [MIT License](LICENSE). You may use, modify, and share it, provided the copyright and license notice are retained.
