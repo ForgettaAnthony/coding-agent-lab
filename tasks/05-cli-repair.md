@@ -1,20 +1,81 @@
-# Task 5: Assemble the command-line repair, 15 minutes
+# Task 5: Run a scripted repair from the terminal, 15 minutes
 
 [Back to the activity overview](../README.md)
 
-Create `core/repair_service.py`, `bootstrap.py`, and `main.py`.
+## What this task gives the agent
 
-`repair_service.py` selects an allowed evaluation case, creates its disposable copy, gives the agent the case's relative file list, and returns the final repair result. It must reject paths outside `evals/`.
+The repair loop can now make decisions, but it needs a simple way for a person
+to start a repair. This task adds one terminal command. The command chooses an
+allowed evaluation project, creates its disposable copy, runs the existing
+agent, and prints what happened.
 
-`bootstrap.py` creates the real tools, model client, and repair service. It is the only file that imports both `core/` and `adapters/` to connect the pieces.
+```mermaid
+flowchart LR
+    command["Terminal command\nrepair evals/arithmetic"] --> main["main.py\nread command options\nand print results"]
+    main --> bootstrap["bootstrap.py\nconnect existing pieces"]
+    bootstrap --> service["repair_service.py\nselect and copy one eval"]
+    service --> agent["RepairAgent\nfrom Task 4"]
+    agent --> output["Visible trace\nchanged files\ntest result"]
 
-`main.py` provides this command:
+    classDef commandBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
+    classDef commandLineBox fill:#dbeafe,stroke:#2563eb,color:#172554
+    classDef serviceBox fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef agentBox fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+    classDef outputBox fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
 
-```bash
-python main.py repair evals/arithmetic --provider scripted
+    class command commandBox
+    class main,bootstrap commandLineBox
+    class service serviceBox
+    class agent agentBox
+    class output outputBox
 ```
 
-Print each visible trace event as it occurs, then print the changed files and final sandboxed test result. Configure the scripted client with a known valid sequence that repairs the arithmetic fixture. This makes a complete end-to-end check possible without an LLM.
+`bootstrap.py` is only the assembly point. It creates and connects the pieces
+you already built; it does not decide how to repair code. `repair_service.py`
+accepts only the supplied projects under `evals/`, asks the workspace runner
+to make a copy, and gives the agent that copy. It must never change the
+original evaluation project.
+
+## Prompt for your coding assistant
+
+Copy this prompt into your coding assistant. It defines the complete scope of
+this task.
+
+```text
+Implement only core/repair_service.py, bootstrap.py, and main.py. Reuse the
+existing RepairAgent, ScriptedClient, safe tools, and workspace runner. Do not
+change files in evals/ and do not execute an evaluation project with host
+Python.
+
+In core/repair_service.py, accept one selected project under evals/. Reject an
+absolute path, a path outside evals/, or an unknown project. Ask the existing
+runner to copy the selected project into a disposable workspace. Build the
+relative file list from that copy, run RepairAgent against it, and return the
+RepairResult. Do not put command-line parsing or Docker commands in this file.
+
+In bootstrap.py, create the real runner-backed repair tools, the selected chat
+client, RepairAgent, and RepairService, then connect them. This is the only
+file that imports both core/ and adapters/. For --provider scripted, create a
+ScriptedClient with an ordered answer-card sequence. Read the arithmetic and
+multi_function fixtures and prepare a valid read → failing test → edit →
+passing test sequence for each. Keep the sequence separate from the repair
+loop.
+
+In main.py, provide this command:
+python main.py repair evals/arithmetic --provider scripted
+Accept the selected eval path and --provider. For the scripted provider, print
+each visible trace event as it occurs, then print changed relative files and
+the final sandboxed test result. Return a non-zero exit status if the repair
+fails. Do not add a web interface, arbitrary project upload, a shell tool, or
+Internet access.
+```
+
+### A term used in the prompt
+
+The **assembly point** is the one place where an application connects its
+parts. Here, `bootstrap.py` connects the repair rules in `core/` to concrete
+tools in `adapters/`. Keeping this wiring in one file stops the repair loop
+from depending directly on the command line, Docker, or a model provider.
 
 ## Checkpoint
 
@@ -23,7 +84,9 @@ python main.py repair evals/arithmetic --provider scripted
 python main.py repair evals/multi_function --provider scripted
 ```
 
-Expected outcome: each command prints a trace that shows local inspection, a failing test, an edit, and a passing test. The original files under `evals/` remain unchanged.
+Expected outcome: each command prints a trace showing local inspection, a
+failing test, an edit, and a passing test. It then prints the changed files and
+final test result. The original files under `evals/` remain unchanged.
 
 ## Where to go next
 

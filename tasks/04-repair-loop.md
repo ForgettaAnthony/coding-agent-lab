@@ -100,4 +100,4 @@ host.
 
 ## Where to go next
 
-Open [Task 5: Add the command-line repair workflow](05-cli-repair.md).
+Open [Task 5: Run a scripted repair from the terminal](05-cli-repair.md).
