@@ -148,14 +148,6 @@ These rules are requirements, not suggestions.
 
 Do not try to understand or implement this whole tree now. It is a map for the activity. Each numbered step below tells you which small group of files to create next and what to check before moving on.
 
-| Location | Why it exists |
-| --- | --- |
-| `main.py` and `bootstrap.py` | Start the application and connect its pieces. |
-| `core/` | Keep the repair decisions, prompts, and result data in one testable place. |
-| `adapters/` | Put technology-specific work here: Ollama, Docker, files, and Gradio. |
-| `evals/` | Hold the supplied buggy projects. The agent reads copies of these files but never changes the originals. |
-| `tests/` | Hold the tests you write to prove that your tools and repair loop behave safely. |
-
 The starter already provides the guide, icon, license, ignore rules, `requirements.txt`, and `evals/`. You create the remaining files during the activity. The small `__init__.py` files simply tell Python that a folder can be imported as a package.
 
 ```text
@@ -194,6 +186,40 @@ coding-agent-lab/
     ├── test_tools.py
     └── test_agent.py
 ```
+
+### What each file will do
+
+| File | Concrete responsibility |
+| --- | --- |
+| `README.md` | Gives you this activity script and the acceptance criteria. It is supplied. |
+| `requirements.txt` | Installs the Python libraries used by the lab. It is supplied. |
+| `pytest.ini` | Restricts host `pytest` to your `tests/` folder, so host Python never runs files in `evals/`. |
+| `main.py` | Accepts `repair` and `ui` commands, starts the selected workflow, and prints the visible trace. |
+| `bootstrap.py` | Creates the real model client, Docker-backed tools, and repair service, then connects them. |
+| `core/__init__.py` | Marks `core/` as an importable package. |
+| `core/models.py` | Defines small result objects, including test results, model actions, and the final repair result. |
+| `core/ports.py` | Describes the small capabilities the repair agent needs: chat, file tools, tests, and optional trace recording. |
+| `core/prompts.py` | Holds the system and user messages, JSON action rules, and tool-result formatting. |
+| `core/repair_agent.py` | Runs the bounded repair loop: ask the model, validate one action, call one permitted tool, store the observation, and stop safely. |
+| `core/repair_service.py` | Selects an allowed evaluation project, creates its disposable workspace, and returns the agent result. |
+
+| File | Concrete responsibility |
+| --- | --- |
+| `adapters/__init__.py` | Marks `adapters/` as an importable package. |
+| `adapters/gradio_ui.py` | Presents the existing repair service in a page with project selection, trace, changed code, test output, and a ZIP download. |
+| `adapters/models/__init__.py` | Marks the model-adapter folder as importable. |
+| `adapters/models/ollama.py` | Sends messages to local Ollama and returns the model's text response. |
+| `adapters/models/scripted.py` | Returns predetermined model replies so your repair-loop tests are repeatable without an LLM. |
+| `adapters/sandbox/__init__.py` | Marks the sandbox folder as importable. |
+| `adapters/sandbox/Dockerfile` | Defines the small non-root Docker image that can run pytest. |
+| `adapters/sandbox/runner.py` | Copies a chosen evaluation project and starts the restricted Docker test command against that copy. |
+| `adapters/sandbox/repair_tools.py` | Implements safe `read_file`, `edit_file`, and `run_tests` operations inside the copied workspace. |
+
+| File or folder | Concrete responsibility |
+| --- | --- |
+| `evals/<case>/` | Supplied buggy source file and pytest file. The agent can read a copied case but must never modify the original. |
+| `tests/test_tools.py` | Proves safe path handling, file edits, and test-runner delegation. |
+| `tests/test_agent.py` | Proves the repair loop with `ScriptedClient`, including invalid JSON and stopping rules. |
 
 One practical rule will keep the project understandable: files in `core/` must not import files from `adapters/`. `bootstrap.py` is the one place that selects the real model, sandbox, and UI pieces and connects them to the repair service.
 
