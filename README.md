@@ -75,19 +75,19 @@ You do **not** need Ollama, a large local model, a cloud-model account, or an AP
 
 ## Optional providers and observability
 
-The base `requirements.txt` is enough for the required activity. Do not install every optional file. Choose one only when you need it for a live demonstration or extension.
+The supplied `requirements.txt` installs the Python libraries for the required activity, OpenAI, Vertex AI, and Langfuse. Installing a library does not enable its service. Choose at most one model provider for a live demonstration; Langfuse is optional trace recording.
 
-| Optional capability | Install | Additional setup |
-| --- | --- | --- |
-| OpenAI model adapter | `python -m pip install -r requirements-openai.txt` | Create an API key and set `OPENAI_API_KEY` in your terminal. Follow the [official Python SDK guide](https://developers.openai.com/api/docs/libraries?language=python). |
-| Google Vertex AI model adapter | `python -m pip install -r requirements-vertex.txt` | Install the [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), run `gcloud init`, then run `gcloud auth application-default login`. Use a Google Cloud project with Vertex AI enabled. |
-| Langfuse Cloud trace recording | `python -m pip install -r requirements-langfuse.txt` | Create your own Langfuse Cloud project and set its public and secret keys in your terminal. See the [Langfuse Python SDK guide](https://langfuse.com/docs/observability/sdk/overview). |
+| Optional capability | Additional setup |
+| --- | --- |
+| OpenAI model adapter | Create an API key and set `OPENAI_API_KEY` in your terminal. Follow the [official Python SDK guide](https://developers.openai.com/api/docs/libraries?language=python). |
+| Google Vertex AI model adapter | Install the [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), run `gcloud init`, then run `gcloud auth application-default login`. Use a Google Cloud project with Vertex AI enabled. |
+| Langfuse Cloud trace recording | Create your own Langfuse Cloud project and set its public and secret keys in your terminal. See the [Langfuse Python SDK guide](https://langfuse.com/docs/observability/sdk/overview). |
 
 Keep credentials out of the repository. These additions do not change the sandbox rule: the model client and observability code run on the host, while evaluation-project code runs only in Docker.
 
 ## Current repository structure
 
-The student release should contain this guide, `LICENSE`, `.gitignore`, the repair-agent icon, the base and optional dependency files, and the five fixed evaluation projects in `evals/`. It must not contain an implemented agent, hidden tests, model keys, or a completed Docker runner. Keep the working implementation in the instructor repository only.
+The student release should contain this guide, `LICENSE`, `.gitignore`, the repair-agent icon, `requirements.txt`, and the five fixed evaluation projects in `evals/`. It must not contain an implemented agent, hidden tests, model keys, or a completed Docker runner. Keep the working implementation in the instructor repository only.
 
 The supplied evaluation projects are:
 
@@ -161,10 +161,7 @@ The starter already provides the guide, icon, license, ignore rules, `requiremen
 ```text
 coding-agent-lab/
 ├── README.md                          # this guide in the student release
-├── requirements.txt                   # supplied base dependencies
-├── requirements-openai.txt            # optional OpenAI adapter
-├── requirements-vertex.txt            # optional Vertex AI adapter
-├── requirements-langfuse.txt          # optional Langfuse Cloud tracing
+├── requirements.txt                   # supplied Python dependencies
 ├── pytest.ini                         # limits host pytest to tests/ only
 ├── main.py                            # terminal entry point
 ├── bootstrap.py                       # assembles the application
@@ -210,7 +207,7 @@ cd coding-agent-lab
 git switch -c build-repair-agent
 ```
 
-The starter already provides `requirements.txt` with `pytest` and `gradio`. Ask your coding assistant to create the target folders, empty package files, and `pytest.ini`. Use Python 3.11 or newer. `pytest.ini` must set `testpaths = tests` so that a host pytest command never discovers or executes tests inside `evals/`.
+The starter already provides `requirements.txt` with the Python libraries used in this lab. Ask your coding assistant to create the target folders, empty package files, and `pytest.ini`. Use Python 3.11 or newer. `pytest.ini` must set `testpaths = tests` so that a host pytest command never discovers or executes tests inside `evals/`.
 
 ```ini
 [pytest]
