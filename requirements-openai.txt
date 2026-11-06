@@ -1,2 +1,0 @@
-# Optional cloud-model adapter. The default Ollama lab setup does not install this.
-openai>=1,<3
