@@ -60,6 +60,10 @@ creation, Docker calls, a shell tool, Internet access, or new Python packages.
 Keep repair decisions in core/ and add concise docstrings.
 ```
 
+The default scripted service needs an answer-card sequence for every one of
+the five dropdown choices. If a selection reports that it has no scripted
+repair, return to Task 5 and add the missing sequence before continuing.
+
 ### A term used in the prompt
 
 A **presentation layer** receives input and displays output. In this task,
@@ -75,8 +79,9 @@ python main.py ui
 
 Expected outcome: the first command builds the interface. The second starts a
 local web server and prints an address to open in a browser. Select
-`arithmetic` and confirm that the page shows the same kind of trace and result
-as the scripted terminal command.
+`arithmetic` first, then confirm that every listed case can complete a
+scripted repair and shows the same kind of trace and result as the terminal
+command.
 
 ## Where to go next
 

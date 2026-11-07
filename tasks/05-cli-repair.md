@@ -58,10 +58,12 @@ RepairResult. Do not put command-line parsing or Docker commands in this file.
 In bootstrap.py, create the real runner-backed repair tools, the selected chat
 client, RepairAgent, and RepairService, then connect them. This is the only
 file that imports both core/ and adapters/. For --provider scripted, create a
-ScriptedClient with an ordered answer-card sequence. Read the arithmetic and
-multi_function fixtures and prepare a valid read → failing test → edit →
-passing test sequence for each. Keep the sequence separate from the repair
-loop.
+ScriptedClient with an ordered answer-card sequence for each of the five
+supplied cases: arithmetic, balanced_brackets, median, multi_function, and
+unique_words. The terminal checkpoint below starts with arithmetic and
+multi_function; Task 6 needs the same provider to support every dropdown
+choice. Read each fixture and prepare a valid read → failing test → edit →
+passing test sequence. Keep the sequences separate from the repair loop.
 
 In main.py, provide this command:
 python main.py repair evals/arithmetic --provider scripted

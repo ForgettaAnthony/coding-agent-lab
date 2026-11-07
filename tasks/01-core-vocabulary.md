@@ -69,6 +69,12 @@ must provide without choosing its implementation. For example, the repair
 agent needs an object with `chat(messages) -> str`; Task 3 provides the
 scripted client, while optional Task 7 adds the Ollama client.
 
+### A checkpoint note
+
+Pytest may treat a class whose name begins with `Test` as a test class. Add
+`__test__ = False` inside the required `TestResult` data class so importing it
+in `tests/` does not produce a collection warning.
+
 ## Checkpoint
 
 ```bash

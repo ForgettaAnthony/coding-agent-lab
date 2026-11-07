@@ -46,6 +46,24 @@ git branch --show-current
 
 The expected branch name is `build-repair-agent`.
 
+### Set Git author information if needed
+
+You will make a commit after this setup task. Git needs a name and email for
+that commit. Check whether this computer already has them configured:
+
+```bash
+git config user.name
+git config user.email
+```
+
+If either command does not print a value, set a repository-only identity. Use
+your own name and email address:
+
+```bash
+git config --local user.name "Your Name"
+git config --local user.email "you@example.com"
+```
+
 ## 2. Create the initial file structure
 
 The starter already provides `requirements.txt` with the Python libraries used
