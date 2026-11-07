@@ -77,6 +77,11 @@ program reads or writes a file.
 
 ## Checkpoint
 
+Before running this checkpoint, make sure `docker info` succeeds. If it does
+not, Docker is not ready yet: start Docker Desktop or resolve the Docker setup
+described in [Before you begin](../README.md#before-you-begin). Do not replace
+the Docker command with host `pytest`.
+
 ```bash
 python -m pytest -q tests/test_tools.py
 docker build -t coding-agent-lab-runner adapters/sandbox

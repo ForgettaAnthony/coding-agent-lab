@@ -66,8 +66,19 @@ that a live model will repair every project successfully.
 
 ## Run the live repair
 
-First download the default model, or use the name of another compatible model
-already shown by `ollama list`.
+If the `ollama` command is not installed, install it from the official
+[Ollama Download](https://ollama.com/download) page for your operating
+system. Open a new terminal after installation, activate your virtual
+environment again, and check that Ollama is available:
+
+```bash
+ollama --version
+ollama list
+```
+
+Then download the default model, or use the exact name of another compatible
+model already shown by `ollama list`. The default download needs about 5 GB of
+local disk space.
 
 ```bash
 ollama pull qwen2.5-coder:7b

@@ -10,6 +10,9 @@ In this activity, you will build a small Python repair agent with a vibe-coding 
 
 The final output is a visible action trace, a disposable repaired copy of the project, and the final test result. You are not given agent source code to complete. You will create the folders, files, tests, and implementation yourself. Your coding assistant may write code, but you are responsible for directing it, reviewing its changes, and running every checkpoint.
 
+The required path, Tasks 0 through 6 and Task 8, is designed for a
+two-and-a-half-hour lab. Task 7 is an optional live-model extension.
+
 ## Objective
 
 Build a repair agent that:
@@ -49,13 +52,16 @@ If the model sends an invalid action or the decision budget ends, the agent stop
 
 ## Before you begin
 
-Have the following ready before the activity:
+Set up these required tools before class:
 
-- A GitHub account, Git, and permission to fork and push to your own repository.
-- Python 3.11 or newer.
-- Docker Desktop installed. Start it before the sandbox task; `docker info` must succeed.
+- A GitHub account and [Git](https://git-scm.com/downloads/). You need permission to fork the course repository and push to your own fork.
+- [Python 3.11 or newer](https://www.python.org/downloads/).
+- Docker with Linux-container support. Install [Docker Desktop for macOS](https://docs.docker.com/desktop/setup/install/mac-install/), [Windows](https://docs.docker.com/desktop/setup/install/windows-install/), or [Linux](https://docs.docker.com/desktop/setup/install/linux/), unless your instructor has already provided a working Docker Engine. Start Docker before Task 2.
 - A code editor and one vibe-coding assistant, such as Codex, Claude Code, or Cursor.
-- A browser and Internet connection to fork the repository and install Python packages.
+- A browser and Internet connection for the initial fork, Python-package installation, and Docker image download.
+
+Keep some free disk space for the Docker image. The optional Ollama model in
+Task 7 is about 5 GB, so skip that task if local storage is limited.
 
 Check your local tools before class:
 
@@ -66,18 +72,49 @@ docker info
 ```
 
 In Windows PowerShell, use `py --version` instead of `python3 --version`.
+`docker info` must print a **Server** section and exit successfully. If it does
+not, start Docker Desktop or ask the instructor to help with the local Docker
+installation before you begin Task 2.
 
-You do **not** need Ollama, a large local model, a cloud-model account, or an API key for the required build and scripted checkpoints. They are needed only for the optional live-model task.
+## Command convention
 
-## Optional providers and observability
+Unless a task says otherwise, run its commands from the root of your cloned
+repository with the virtual environment active. If you open a new terminal,
+activate it again before running `python`:
 
-The supplied `requirements.txt` installs the Python libraries for the required activity, OpenAI, Vertex AI, and Langfuse. Installing a library does not enable its service. Choose at most one model provider for a live demonstration; Langfuse is optional trace recording.
+**macOS or Linux**
 
-| Optional capability | Additional setup |
-| --- | --- |
-| OpenAI model adapter | Create an API key and set `OPENAI_API_KEY` in your terminal. Follow the [official Python SDK guide](https://developers.openai.com/api/docs/libraries?language=python). |
-| Google Vertex AI model adapter | Install the [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), run `gcloud init`, then run `gcloud auth application-default login`. Use a Google Cloud project with Vertex AI enabled. |
-| Langfuse Cloud trace recording | Create your own Langfuse Cloud project and set its public and secret keys in your terminal. See the [Langfuse Python SDK guide](https://langfuse.com/docs/observability/sdk/overview). |
+```bash
+source .venv/bin/activate
+```
+
+**Windows PowerShell**
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+The **host computer** in this guide means your normal computer outside Docker.
+The host starts the Docker container; evaluation-project Python runs only
+inside that container.
+
+You do **not** need Ollama, a large local model, a cloud-model account, or an API key for the required build and scripted checkpoints. Ollama is needed only for the optional live-model task.
+
+## Optional integrations
+
+`pip install -r requirements.txt` installs the required Python libraries,
+including `pytest` and Gradio. Do not install those separately. It also
+includes the OpenAI, Google, and Langfuse libraries so the instructor can add
+an extension later without a second dependency setup.
+
+The guided Tasks 0 through 8 build `ScriptedClient` and, optionally,
+`OllamaClient` only. They do not ask you to implement an OpenAI, Vertex AI, or
+Langfuse adapter. You do not need an account or an API key for those services.
+
+| Optional integration | When to use it | Setup |
+| --- | --- | --- |
+| Ollama | Optional Task 7 live model run | Install from [Ollama Download](https://ollama.com/download), then download an installed model with `ollama pull ...`. |
+| OpenAI, Google Vertex AI, or Langfuse | Only if the instructor assigns a later extension | Follow the instructor's extension instructions. They are not part of this activity. |
 
 Keep credentials out of the repository. These additions do not change the sandbox rule: the model client and observability code run on the host, while evaluation-project code runs only in Docker.
 
