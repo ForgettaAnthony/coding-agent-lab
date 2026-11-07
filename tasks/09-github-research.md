@@ -131,7 +131,7 @@ external suggestion instead of treating it as a fact.
 ## Checkpoint
 
 ```bash
-python -m pytest -q tests/test_research.py tests/test_agent.py
+python -m pytest -q tests/test_github_research.py tests/test_agent.py
 python -m pytest -q
 python main.py repair evals/arithmetic --provider scripted
 ```

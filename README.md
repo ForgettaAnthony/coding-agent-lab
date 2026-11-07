@@ -238,8 +238,8 @@ coding-agent-lab/
 └── tests/                             # you create this folder
     ├── test_tools.py
     ├── test_agent.py
-    ├── test_research.py               # optional Task 9
-    └── test_observability.py         # optional Task 10
+    ├── test_github_research.py        # optional Task 9
+    └── test_langfuse_observability.py # optional Task 10
 ```
 
 ### What each file will do
@@ -280,8 +280,8 @@ coding-agent-lab/
 | `evals/<case>/` | Supplied buggy source file and pytest file. The agent can read a copied case but must never modify the original. |
 | `tests/test_tools.py` | Proves safe path handling, file edits, and test-runner delegation. |
 | `tests/test_agent.py` | Proves the repair loop with `ScriptedClient`, including invalid JSON and stopping rules. |
-| `tests/test_research.py` | Optional Task 9 checks the GitHub boundary with fake HTTP responses. |
-| `tests/test_observability.py` | Optional Task 10 checks trajectory recording with a fake Langfuse client. |
+| `tests/test_github_research.py` | Optional Task 9 checks the GitHub boundary with fake HTTP responses. |
+| `tests/test_langfuse_observability.py` | Optional Task 10 checks trajectory recording with a fake Langfuse client. |
 
 One practical rule will keep the project understandable: files in `core/` must not import files from `adapters/`. `bootstrap.py` is the one place that selects the real model, sandbox, and UI pieces and connects them to the repair service.
 

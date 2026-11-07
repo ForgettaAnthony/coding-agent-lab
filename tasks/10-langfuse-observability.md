@@ -120,7 +120,7 @@ only `RepairAgent` decides whether an action is allowed and whether tests pass.
 ## Checkpoint
 
 ```bash
-python -m pytest -q tests/test_observability.py tests/test_agent.py
+python -m pytest -q tests/test_langfuse_observability.py tests/test_agent.py
 python -m pytest -q
 python main.py repair evals/arithmetic --provider scripted
 ```
