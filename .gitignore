@@ -3,6 +3,10 @@
 __pycache__/
 *.py[cod]
 
+# Local credentials for optional integrations
+.env
+.env.*
+
 # Test and coverage artifacts
 .pytest_cache/
 .coverage

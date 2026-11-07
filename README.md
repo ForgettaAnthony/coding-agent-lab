@@ -104,19 +104,22 @@ You do **not** need Ollama, a large local model, a cloud-model account, or an AP
 
 `pip install -r requirements.txt` installs the required Python libraries,
 including `pytest` and Gradio. Do not install those separately. It also
-includes the OpenAI, Google, and Langfuse libraries so the instructor can add
-an extension later without a second dependency setup.
+includes the OpenAI, Google, and Langfuse libraries so optional extensions can
+be added without a second dependency setup.
 
-The guided Tasks 0 through 8 build `ScriptedClient` and, optionally,
-`OllamaClient` only. They do not ask you to implement an OpenAI, Vertex AI, or
-Langfuse adapter. You do not need an account or an API key for those services.
+The required Tasks 0 through 8 build `ScriptedClient` and, optionally,
+`OllamaClient`. They do not require any cloud account or API key. Tasks 9 and
+10 are separate opt-in extensions for bounded GitHub evidence and Langfuse
+Cloud trajectory recording.
 
 | Optional integration | When to use it | Setup |
 | --- | --- | --- |
 | Ollama | Optional Task 7 live model run | Install from [Ollama Download](https://ollama.com/download), then download an installed model with `ollama pull ...`. |
-| OpenAI, Google Vertex AI, or Langfuse | Only if the instructor assigns a later extension | Follow the instructor's extension instructions. They are not part of this activity. |
+| GitHub code search | Optional Task 9 research extension | Create a short-lived, least-privilege token only if you complete [Task 9](tasks/09-github-research.md). The adapter calls GitHub's code-search API only. |
+| Langfuse Cloud | Optional Task 10 observability extension | Create a Cloud project and API keys only if you complete [Task 10](tasks/10-langfuse-observability.md). |
+| OpenAI or Google Vertex AI | Only if the instructor assigns a later extension | Follow the instructor's extension instructions. They are not part of this activity. |
 
-Keep credentials out of the repository. These additions do not change the sandbox rule: the model client and observability code run on the host, while evaluation-project code runs only in Docker.
+Keep credentials out of the repository. These additions do not change the sandbox rule: the model client, optional research adapter, and observability code run on the host, while evaluation-project code runs only in Docker.
 
 ## Current repository structure
 
@@ -153,7 +156,8 @@ You are helping me build a teaching-sized Python repair agent.
 Read the named files before changing anything. Work only on the files listed
 in this task. Keep the repair decision code separate from Docker, model HTTP,
 and Gradio code. Do not add a host shell, arbitrary project upload, Internet
-search, API keys, or packages beyond those requested.
+search, API keys, or packages beyond those requested. An explicitly named
+optional extension task is the only exception.
 
 Task: <paste the task for this stage>
 
@@ -194,7 +198,9 @@ coding-agent-lab/
 │   ├── 05-cli-repair.md
 │   ├── 06-gradio-ui.md
 │   ├── 07-live-ollama.md
-│   └── 08-final-demonstration.md
+│   ├── 08-final-demonstration.md
+│   ├── 09-github-research.md        # optional extension
+│   └── 10-langfuse-observability.md # optional extension
 ├── pytest.ini                         # you create this
 ├── main.py                            # you create this
 ├── bootstrap.py                       # you create this
@@ -212,11 +218,17 @@ coding-agent-lab/
 │   │   ├── __init__.py
 │   │   ├── ollama.py
 │   │   └── scripted.py
-│   └── sandbox/
+│   ├── sandbox/
 │       ├── __init__.py
 │       ├── Dockerfile
 │       ├── runner.py
 │       └── repair_tools.py
+│   ├── research/                    # optional Task 9 package
+│   │   ├── __init__.py
+│   │   └── github_research.py
+│   └── observability/               # optional Task 10 package
+│       ├── __init__.py
+│       └── langfuse.py
 ├── evals/                             # supplied, never modified
 │   ├── arithmetic/
 │   ├── balanced_brackets/
@@ -225,7 +237,9 @@ coding-agent-lab/
 │   └── unique_words/
 └── tests/                             # you create this folder
     ├── test_tools.py
-    └── test_agent.py
+    ├── test_agent.py
+    ├── test_research.py               # optional Task 9
+    └── test_observability.py         # optional Task 10
 ```
 
 ### What each file will do
@@ -237,10 +251,10 @@ coding-agent-lab/
 | `tasks/*.md` | Gives the exact instructions, prompt, and checkpoint for one task. They are supplied. |
 | `pytest.ini` | Restricts host `pytest` to your `tests/` folder, so host Python never runs files in `evals/`. |
 | `main.py` | Accepts `repair` and `ui` commands, starts the selected workflow, and prints the visible trace. |
-| `bootstrap.py` | Creates the real model client, Docker-backed tools, and repair service, then connects them. |
+| `bootstrap.py` | Creates and connects the selected model client, Docker-backed tools, and repair service. Optional extensions are connected here only when enabled. |
 | `core/__init__.py` | Marks `core/` as an importable package. |
 | `core/models.py` | Defines small result objects, including test results, model actions, and the final repair result. |
-| `core/ports.py` | Describes the small capabilities the repair agent needs: chat, file tools, tests, and optional trace recording. |
+| `core/ports.py` | Describes the small capabilities the repair agent needs: chat, file tools, tests, and optional research or trace recording. |
 | `core/prompts.py` | Holds the system and user messages, JSON action rules, and tool-result formatting. |
 | `core/repair_agent.py` | Runs the bounded repair loop: ask the model, validate one action, call one permitted tool, store the observation, and stop safely. |
 | `core/repair_service.py` | Selects an allowed evaluation project, creates its disposable workspace, and returns the agent result. |
@@ -256,12 +270,18 @@ coding-agent-lab/
 | `adapters/sandbox/Dockerfile` | Defines the small non-root Docker image that can run pytest. |
 | `adapters/sandbox/runner.py` | Copies a chosen evaluation project and starts the restricted Docker test command against that copy. |
 | `adapters/sandbox/repair_tools.py` | Implements safe `read_file`, `edit_file`, and `run_tests` operations inside the copied workspace. |
+| `adapters/research/__init__.py` | Marks the optional research-adapter folder as importable. |
+| `adapters/research/github_research.py` | Optional, bounded client for GitHub code-search evidence. It does not browse arbitrary URLs. |
+| `adapters/observability/__init__.py` | Marks the optional observability-adapter folder as importable. |
+| `adapters/observability/langfuse.py` | Optional Langfuse Cloud recorder for the public repair trajectory. |
 
 | File or folder | Concrete responsibility |
 | --- | --- |
 | `evals/<case>/` | Supplied buggy source file and pytest file. The agent can read a copied case but must never modify the original. |
 | `tests/test_tools.py` | Proves safe path handling, file edits, and test-runner delegation. |
 | `tests/test_agent.py` | Proves the repair loop with `ScriptedClient`, including invalid JSON and stopping rules. |
+| `tests/test_research.py` | Optional Task 9 checks the GitHub boundary with fake HTTP responses. |
+| `tests/test_observability.py` | Optional Task 10 checks trajectory recording with a fake Langfuse client. |
 
 One practical rule will keep the project understandable: files in `core/` must not import files from `adapters/`. `bootstrap.py` is the one place that selects the real model, sandbox, and UI pieces and connects them to the repair service.
 
@@ -278,3 +298,11 @@ Complete the tasks in this order. Task 7 is optional; Task 8 can use the scripte
 7. [Task 6: Show a repair in a small web page, 20 minutes](tasks/06-gradio-ui.md)
 8. [Task 7: Try a real local model with Ollama (optional), 15 minutes](tasks/07-live-ollama.md)
 9. [Task 8: Prepare the final demonstration, 10 minutes](tasks/08-final-demonstration.md)
+
+### Optional extensions after the required activity
+
+These extensions are deliberately separate from the required lab. Do not begin
+either one until the scripted repair and its checkpoints work.
+
+10. [Task 9: Add bounded GitHub research (optional), 20 minutes](tasks/09-github-research.md)
+11. [Task 10: Record a trajectory with Langfuse Cloud (optional), 20 minutes](tasks/10-langfuse-observability.md)
