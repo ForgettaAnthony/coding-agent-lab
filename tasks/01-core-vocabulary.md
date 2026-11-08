@@ -56,8 +56,10 @@ small named containers: TestResult(passed, output, returncode),
 ModelAction(tool, arguments, optional public summary), and RepairResult
 (passed, trace entries, changed files, workspace location, most recent test
 result). In core/ports.py, use typing.Protocol to define a ChatClient with
-chat(messages) -> str, RepairTools with read_file, edit_file, and run_tests,
-and an optional TraceRecorder with record(event, payload). Use only the
+chat(messages) -> str, RepairToolsPort with read_file, edit_file, and
+run_tests, and an optional TraceRecorder with record(event, payload). The
+name ends in Port because Task 2 creates a concrete class named RepairTools
+that satisfies it. Use only the
 standard library and core modules. Do not import adapters, Docker, Gradio, or
 an HTTP client. Add concise docstrings. Do not call an LLM or repair a project.
 ```

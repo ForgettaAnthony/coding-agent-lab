@@ -74,13 +74,20 @@ choose the next step. Keep a visible trace with repair_started, model_response,
 tool_result, and repair_finished. The trace may include the action's short
 public summary, but never requests private reasoning.
 
-Return a RepairResult in every outcome. Return success only when a run_tests
-result passes after the repair attempt begins. Return failure when a reply is
-invalid or when an eight-decision budget is reached. Use ScriptedClient and
+Return a RepairResult in every outcome, including when client.chat raises an
+error (for example, a ScriptedClient that has run out of replies) or a tool
+raises an error (a missing file, or a path that escapes the workspace): record
+a client error as a failed outcome, and turn a tool error into a visible error
+observation so the model can choose another step. Return success only when a
+run_tests result passes after an edit that followed a failing run_tests; a
+run_tests result that passes before any edit means there is no reproducible
+bug, so finish with a failed outcome that says so. Return failure when a reply
+is invalid or when an eight-decision budget is reached. Use ScriptedClient and
 fake tools in tests; do not run Docker or an evaluation project with host
 Python. Test these cases: a successful read → failing test → edit → passing
 test sequence; invalid JSON that calls no tool; an edit rejected before a
-failing test; and budget exhaustion.
+failing test; budget exhaustion; a passing baseline that is not reported as a
+repair; and a client error that still returns a RepairResult.
 ```
 
 ### A term used in the prompt
