@@ -34,26 +34,26 @@ not turn into account setup during the lab.
 
 ## Preparation flow
 
+Sign in to your GitHub account in a browser before starting. You do not need to
+fork or clone the repository today.
+
 ```mermaid
 flowchart LR
-    account["(1) GitHub account"] --> tools["(2) Install Git, Python, Docker"]
-    tools --> clone["(3) Fork, clone, and install packages"]
-    clone --> vibe["(4) Sign in to one vibe-coding assistant"]
-    vibe --> model["(5) Test local Ollama or one cloud API"]
-    model --> github["(6) Test a restricted GitHub token"]
-    github --> langfuse["(7) Test Langfuse Cloud"]
-    langfuse --> ready["(8) Final readiness check"]
+    tools["(1) Install Git, Python, Docker"] --> python["(2) Prepare a small Python environment"]
+    python --> vibe["(3) Sign in to one vibe-coding assistant"]
+    vibe --> model["(4) Test local Ollama or one cloud API"]
+    model --> github["(5) Test a restricted GitHub token"]
+    github --> langfuse["(6) Test Langfuse Cloud"]
+    langfuse --> ready["(7) Final readiness check"]
 
-    classDef accountBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
     classDef toolBox fill:#dbeafe,stroke:#2563eb,color:#172554
     classDef setupBox fill:#ffedd5,stroke:#ea580c,color:#7c2d12
     classDef modelBox fill:#dcfce7,stroke:#16a34a,color:#14532d
     classDef serviceBox fill:#fef3c7,stroke:#d97706,color:#78350f
     classDef checkBox fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
 
-    class account accountBox
     class tools toolBox
-    class clone,vibe setupBox
+    class python,vibe setupBox
     class model modelBox
     class github,langfuse serviceBox
     class ready checkBox
@@ -96,56 +96,33 @@ Desktop normally uses Linux containers through WSL 2. If your computer is
 managed by an institution or virtualization is disabled, ask for help before
 the lab rather than replacing Docker with host Python.
 
-## 2. Fork the correct activity branch
+## 2. Prepare a small Python environment for connection checks
 
-The guided activity is on the `guided-from-scratch-activity` branch, not the
-default `main` branch. Open this exact page in your browser:
-
-<https://github.com/MahiBegoug/coding-agent-lab/tree/guided-from-scratch-activity>
-
-Select **Fork**. If GitHub shows a **Copy the DEFAULT branch only** option,
-leave it unchecked. Your fork must include `guided-from-scratch-activity`.
-
-## 3. Clone your fork and install the packages
-
-Replace `YOUR-USERNAME` with your GitHub username. These commands download the
-guided activity, not the default starter.
-
-```bash
-git clone --branch guided-from-scratch-activity --single-branch https://github.com/YOUR-USERNAME/coding-agent-lab.git
-cd coding-agent-lab
-git branch --show-current
-git remote -v
-```
-
-Expected outcome:
-
-- `git branch --show-current` prints `guided-from-scratch-activity`.
-- `git remote -v` shows a URL containing **your** GitHub username.
-
-Do not run `git init`. Cloning already created the Git repository. Do not
-create the `build-repair-agent` work branch yet; Task 0 starts with that step.
-
-Create the Python environment from the `coding-agent-lab` folder you just
-cloned.
+Do not clone or fork the activity repository today. Tomorrow's Task 0 provides
+those instructions. For today's cloud and Langfuse checks, create a temporary
+folder anywhere convenient, then create a small virtual environment inside it.
 
 **macOS or Linux**
 
 ```bash
+mkdir coding-agent-lab-prelab
+cd coding-agent-lab-prelab
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install "openai>=1,<3" "google-genai>=1,<2" "langfuse>=5,<6"
 python -m pip check
 ```
 
 **Windows PowerShell**
 
 ```powershell
+mkdir coding-agent-lab-prelab
+cd coding-agent-lab-prelab
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install "openai>=1,<3" "google-genai>=1,<2" "langfuse>=5,<6"
 python -m pip check
 ```
 
@@ -156,16 +133,11 @@ and then activate the environment again:
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
-Expected outcome: `python -m pip check` reports no broken requirements.
-The installed requirements already include the OpenAI, Gemini, and Langfuse
-Python clients used by the connection checks below; do not run extra `pip
-install` commands for them.
+Expected outcome: `python -m pip check` reports no broken requirements. This
+environment is only for today's connection checks. Tomorrow you will make a
+new `.venv` inside the repository.
 
-Do **not** run `pytest` yet. The supplied `evals/` projects intentionally
-contain bugs, and Task 0 will create `pytest.ini` to ensure that host Python
-never runs those project tests.
-
-## 4. Prepare one vibe-coding assistant
+## 3. Prepare one vibe-coding assistant
 
 Choose one assistant and sign in before the lab. Any of these is suitable:
 
@@ -173,19 +145,18 @@ Choose one assistant and sign in before the lab. Any of these is suitable:
 - [Claude Code](https://code.claude.com/docs/en/overview)
 - [Cursor](https://cursor.com/downloads)
 
-Open your cloned `coding-agent-lab` folder in the selected tool. Send this
-safe first message:
+Open the temporary `coding-agent-lab-prelab` folder in the selected tool. Send
+this safe first message:
 
 ```text
-Read README.md only. Do not modify any files. Tell me the title of the first task.
+Reply exactly: VIBE READY. Do not create or modify files.
 ```
 
-Then run `git status --short` in the terminal. It must remain empty. This
-confirms that the assistant is signed in, can see the repository, and did not
-make an unrequested edit. During the lab, it will help you create the agent;
-it does not replace the repair model described next.
+Success means the assistant replies `VIBE READY` without asking you to sign in.
+During the lab, it will help you create the agent; it does not replace the
+repair model described next.
 
-## 5. Choose and test one repair-model route
+## 4. Choose and test one repair-model route
 
 Choose one route. Route A is strongly preferred because it keeps the repair
 model on your computer. Route B is a fallback only for machines with limited
@@ -271,7 +242,7 @@ student who uses a cloud provider may ask their coding assistant to add one
 adapter that satisfies that interface. Do not add that code during pre-lab
 setup.
 
-## 6. Prepare and test the GitHub research connection
+## 5. Prepare and test the GitHub research connection
 
 The later GitHub extension is restricted to GitHub code search. It is not a
 general browser. Create a separate, short-lived **fine-grained personal access
@@ -301,7 +272,7 @@ python -c "import json, os, urllib.request; request=urllib.request.Request('http
 Success prints `GITHUB READY:` followed by your GitHub login. The command does
 not display the token. Do not use your normal Git password or a broad token.
 
-## 7. Prepare and test Langfuse Cloud
+## 6. Prepare and test Langfuse Cloud
 
 This activity uses [Langfuse Cloud](https://cloud.langfuse.com), not a local or
 self-hosted installation. Create an account, make one project, then create API
@@ -331,13 +302,11 @@ Success prints `LANGFUSE READY`. The command only verifies credentials. The
 optional lab task will later record the public action trajectory; do not send
 source files, keys, or private test output to Langfuse.
 
-## 8. Final readiness check
+## 7. Final readiness check
 
-With `.venv` active and Docker running, run:
+With the temporary `.venv` active and Docker running, run:
 
 ```bash
-git branch --show-current
-git status --short
 python --version
 python -m pip check
 docker info --format '{{.ServerVersion}}'
@@ -345,11 +314,9 @@ docker info --format '{{.ServerVersion}}'
 
 You are ready when all statements below are true:
 
-- [ ] The branch is `guided-from-scratch-activity`.
-- [ ] `git status --short` is empty immediately after setup.
 - [ ] Python is version 3.11 or newer and `python -m pip check` reports no broken requirements.
 - [ ] Docker prints a server version instead of an error.
-- [ ] One vibe-coding assistant can read the cloned repository without changing it.
+- [ ] One vibe-coding assistant replies `VIBE READY` without modifying files.
 - [ ] Local Ollama returns `OLLAMA READY`, **or** one cloud provider returns `API READY`.
 - [ ] The GitHub connection prints your login.
 - [ ] Langfuse Cloud prints `LANGFUSE READY`.
@@ -375,10 +342,10 @@ Complete error message with credentials removed:
 | A cloud request returns authentication or billing errors | Check the provider dashboard, key, selected model, and account billing. Do not share the key. |
 | GitHub check returns 401 or 403 | Create a new restricted fine-grained token and check that it has not expired. |
 | Langfuse check fails | Recheck the two keys and the Cloud region URL in the project's settings. |
-| The clone is on `main` | Delete that incomplete clone and repeat Step 2 and Step 3 with `guided-from-scratch-activity`. |
 
 ## Tomorrow: where to begin
 
 Bring your laptop, charger, GitHub sign-in, and this completed environment. At
 the start of the lab, open the [activity overview](../README.md), then follow
-[Task 0: Set up the repository and environment](../tasks/00-setup.md).
+[Task 0: Set up the repository and environment](../tasks/00-setup.md). Task 0
+is where you will fork and clone the guided repository.
