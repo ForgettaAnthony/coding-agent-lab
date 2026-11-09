@@ -6,7 +6,9 @@
 
 Complete this page before the lab. Allow 45 to 60 minutes, plus the initial
 local-model download if you choose Ollama. The goal is simple: arrive with the
-tools, accounts, and connections already checked. You will not build the repair
+tools, accounts, and connections already checked. Downloads, sign-in, and
+Internet access can be slow or unavailable at the wrong moment; completing
+these checks early protects the laboratory time. You will not build the repair
 agent or run an evaluation project on this page.
 
 ## What each thing is for
