@@ -1,6 +1,11 @@
 <h1 align="center">Python Repair Agent Lab: Pre-lab Setup</h1>
 
 <p align="center">
+  <strong>Software Engineering for AI</strong><br>
+  Course team: Emad Shihab, Mahi Begoug, and Musfiqur Rahman
+</p>
+
+<p align="center">
   <img src="assets/python-repair-agent-icon.png" width="150" alt="A repair agent fixes a code bug and verifies the repair">
 </p>
 
