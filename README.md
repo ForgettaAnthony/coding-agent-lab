@@ -56,7 +56,7 @@ Set up these required tools before class:
 
 - A GitHub account and [Git](https://git-scm.com/downloads/). You need permission to fork the course repository and push to your own fork.
 - [Python 3.11 or newer](https://www.python.org/downloads/).
-- Docker with Linux-container support. Install [Docker Desktop for macOS](https://docs.docker.com/desktop/setup/install/mac-install/), [Windows](https://docs.docker.com/desktop/setup/install/windows-install/), or [Linux](https://docs.docker.com/desktop/setup/install/linux/), unless your instructor has already provided a working Docker Engine. Start Docker before Task 2.
+- Docker with Linux-container support. Install [Docker Desktop for macOS](https://docs.docker.com/desktop/setup/install/mac-install/), [Windows](https://docs.docker.com/desktop/setup/install/windows-install/), or [Linux](https://docs.docker.com/desktop/setup/install/linux/), unless your instructor has already provided a working Docker Engine. Start Docker before Task 2. Colima, Rancher Desktop and Podman also work, provided the repair workspace is created under your home directory as Task 2 requires.
 - A code editor and one vibe-coding assistant, such as Codex, Claude Code, or Cursor.
 - A browser and Internet connection for the initial fork, Python-package installation, and Docker image download.
 
@@ -120,6 +120,12 @@ Cloud trajectory recording.
 | OpenAI or Google Vertex AI | Only if the instructor assigns a later extension | Follow the instructor's extension instructions. They are not part of this activity. |
 
 Keep credentials out of the repository. These additions do not change the sandbox rule: the model client, optional research adapter, and observability code run on the host, while evaluation-project code runs only in Docker.
+
+## Which branch to use
+
+This activity is the `guided-from-scratch-activity` branch of the repository.
+Task 0 creates your work branch from it. The default branch holds a different
+version of the lab with the agent code already present; do not start from it.
 
 ## Current repository structure
 

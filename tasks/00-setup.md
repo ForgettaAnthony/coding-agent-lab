@@ -32,8 +32,14 @@ activity. Replace `YOUR-USERNAME` with your GitHub username.
 ```bash
 git clone https://github.com/YOUR-USERNAME/coding-agent-lab.git
 cd coding-agent-lab
-git switch -c build-repair-agent
+git switch -c build-repair-agent origin/guided-from-scratch-activity
 ```
+
+This activity lives on the `guided-from-scratch-activity` branch, not on the
+repository's default branch. The `git switch` command above starts your work
+branch from it. If `ls` shows a `core/` or `adapters/` folder, or `tests/`
+already contains files, you are on the wrong branch: run the `git switch`
+command again.
 
 Do not run `git init` before or after `git clone`: cloning already creates the
 local Git repository and configures its `origin` remote. Confirm that you are
@@ -42,9 +48,11 @@ working from your fork and on the activity branch:
 ```bash
 git remote -v
 git branch --show-current
+ls
 ```
 
-The expected branch name is `build-repair-agent`.
+The expected branch name is `build-repair-agent`, and `ls` should list only
+`LICENSE`, `README.md`, `docs`, `evals`, `requirements.txt`, and `tasks`.
 
 ### Set Git author information if needed
 
@@ -67,10 +75,22 @@ git config --local user.email "you@example.com"
 ## 2. Create the initial file structure
 
 The starter already provides `requirements.txt` with the Python libraries used
-in this lab. Ask your coding assistant to create the target folders, empty
-package files, and `pytest.ini`. Use Python 3.11 or newer. `pytest.ini` must
-set `testpaths = tests` so that a host pytest command never discovers or
-executes tests inside `evals/`.
+in this lab. Ask your coding assistant to create these folders and files, and
+nothing else yet:
+
+```text
+core/__init__.py
+adapters/__init__.py
+adapters/models/__init__.py
+adapters/sandbox/__init__.py
+tests/.gitkeep
+pytest.ini
+```
+
+The `__init__.py` files are empty; `tests/.gitkeep` is an empty file that lets
+Git keep the otherwise empty `tests/` folder. Use Python 3.11 or newer.
+`pytest.ini` must set `testpaths = tests` so that a host pytest command never
+discovers or executes tests inside `evals/`.
 
 ```ini
 [pytest]
@@ -107,9 +127,11 @@ python -m pip check
 git status --short
 ```
 
-At this point, do not run `pytest` from the repository root: the supplied
-evaluation tests are intentionally buggy and must run only in Docker. Commit
-the file structure and dependency file before starting Task 1.
+Expected outcome: `python --version` prints 3.11 or newer, `pip check` prints
+`No broken requirements found.`, and `git status --short` lists only the new
+folders and `pytest.ini`. Do not run `pytest` yet: there are no tests in
+`tests/` and the supplied evaluation tests must run only in Docker. Commit the
+file structure before starting Task 1.
 
 ## Where to go next
 

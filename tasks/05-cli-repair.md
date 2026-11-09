@@ -83,6 +83,16 @@ from depending directly on the command line, Docker, or a model provider.
 
 ## Checkpoint
 
+This checkpoint runs the real Docker sandbox. Before it, confirm that Docker is
+running and that the Task 2 image exists:
+
+```bash
+docker info
+docker image ls coding-agent-lab-runner
+```
+
+Then run the scripted repairs:
+
 ```bash
 python main.py repair evals/arithmetic --provider scripted
 python main.py repair evals/multi_function --provider scripted
@@ -91,6 +101,11 @@ python main.py repair evals/multi_function --provider scripted
 Expected outcome: each command prints a trace showing local inspection, a
 failing test, an edit, and a passing test. It then prints the changed files and
 final test result. The original files under `evals/` remain unchanged.
+
+If Docker is not running, the first `run_tests` observation reports a runner
+error instead of a failing test, the scripted edit still happens, and the
+repair ends as a failure. That is the harness working as designed: start
+Docker and run the command again.
 
 ## Where to go next
 

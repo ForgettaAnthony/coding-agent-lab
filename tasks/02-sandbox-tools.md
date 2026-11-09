@@ -50,10 +50,15 @@ this task.
 Implement only adapters/sandbox/Dockerfile, adapters/sandbox/runner.py,
 adapters/sandbox/repair_tools.py, and tests/test_tools.py. In the Dockerfile,
 install Python and pytest and run as a non-root user. In runner.py, copy the
-selected evals/<case> directory to a new temporary workspace, then invoke a
-short-lived Docker container with networking disabled to run pytest -q against
-that copy. Mount only the copied workspace into the container. Return a
-structured test result with passed, output, and returncode.
+selected evals/<case> directory to a new disposable workspace folder created
+under the user's home directory (for example ~/.cache/coding-agent-lab/),
+never under the system temporary directory: Docker Desktop shares macOS's
+/var/folders with its virtual machine, but Colima, Rancher Desktop and Podman
+share only the home directory, and a mount of an unshared path is empty inside
+the container. Then invoke a short-lived Docker container with networking
+disabled to run pytest -q -p no:cacheprovider against that copy. Mount only
+the copied workspace into the container, read-only. Return a structured test
+result with passed, output, and returncode.
 
 In repair_tools.py, implement a safe_path(workspace, requested_path) helper
 that rejects absolute paths and resolved paths outside the workspace. Implement
@@ -87,7 +92,15 @@ python -m pytest -q tests/test_tools.py
 docker build -t coding-agent-lab-runner adapters/sandbox
 ```
 
-Expected outcome: your unit tests pass, and Docker builds the runner image. Do not run an evaluation project with host Python to test this task.
+Expected outcome: your unit tests pass, and Docker builds the runner image.
+The first build downloads the Python base image, which can take a few minutes
+on a slow connection. Do not run an evaluation project with host Python to test
+this task.
+
+If you use Colima, Rancher Desktop or Podman instead of Docker Desktop, a
+sandboxed test that reports `no tests ran` means the workspace folder is not
+shared with the container's virtual machine; keep the workspace under your home
+directory as the prompt requires.
 
 ## Where to go next
 
