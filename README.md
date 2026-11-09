@@ -4,6 +4,8 @@
   <img src="docs/assets/python-repair-agent-icon.png" width="180" alt="A repair agent fixes a code bug and verifies the repair">
 </p>
 
+> **Before the lab:** complete the [Pre-lab environment check](docs/pre-lab-setup.md). It takes about 20 to 30 minutes and prevents installation delays during the activity.
+
 ## A guided, from-scratch activity
 
 In this activity, you will build a small Python repair agent with a vibe-coding assistant such as Codex, Claude Code, or Cursor. The agent receives one buggy Python project and its tests. It must inspect the project, reproduce the failure by testing it, make a focused edit, and verify the repair in a Docker sandbox.

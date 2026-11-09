@@ -25,12 +25,15 @@ flowchart LR
 
 ## 1. Create your working copy
 
-Open the course repository on GitHub and select **Fork**. GitHub creates a copy
-under your own account. Then clone that copy and create a branch for this
-activity. Replace `YOUR-USERNAME` with your GitHub username.
+Open the course repository on GitHub with the
+`guided-from-scratch-activity` branch selected, then select **Fork**. If
+GitHub offers **Copy the DEFAULT branch only**, leave it unchecked so your fork
+contains this activity branch. GitHub creates a copy under your own account.
+Then clone that branch and create a branch for your work. Replace
+`YOUR-USERNAME` with your GitHub username.
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/coding-agent-lab.git
+git clone --branch guided-from-scratch-activity --single-branch https://github.com/YOUR-USERNAME/coding-agent-lab.git
 cd coding-agent-lab
 git switch -c build-repair-agent origin/guided-from-scratch-activity
 ```
@@ -43,7 +46,7 @@ command again.
 
 Do not run `git init` before or after `git clone`: cloning already creates the
 local Git repository and configures its `origin` remote. Confirm that you are
-working from your fork and on the activity branch:
+working from your fork and on your work branch:
 
 ```bash
 git remote -v
