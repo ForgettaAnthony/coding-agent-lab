@@ -4,48 +4,64 @@
   <img src="assets/python-repair-agent-icon.png" width="150" alt="A repair agent fixes a code bug and verifies the repair">
 </p>
 
-Complete this page before the lab. It should take about 20 to 30 minutes. At
-the end, you will have a working local development environment and a copy of
-the correct activity branch. You will not build the agent yet.
+Complete this page before the lab. Allow 45 to 60 minutes, plus the initial
+local-model download if you choose Ollama. The goal is simple: arrive with the
+tools, accounts, and connections already checked. You will not build the repair
+agent or run an evaluation project on this page.
 
-## What you need
+## What each thing is for
 
-| Required item | Why the lab needs it |
+The lab uses four different kinds of tool. Keeping their roles separate avoids
+a common confusion.
+
+| Item | Its role in this activity |
 | --- | --- |
-| GitHub account | To fork the activity repository and push your own work. |
-| Git | To clone the repository and save your work in commits. |
-| Python 3.11 or newer | To build and test the repair-agent application. |
-| Docker with Linux containers | To run buggy-project tests safely outside your normal computer. |
-| Code editor and coding assistant | To follow the guided vibe-coding tasks. Codex, Claude Code, and Cursor are suitable examples. |
-| Internet access | To fork the repository and download Python packages and the Docker image. |
+| A vibe-coding assistant | Helps you create and review the lab code. Choose Codex, Claude Code, or Cursor. It is not the model that your repair agent calls. |
+| A repair-model route | Supplies the live model response in optional Task 7. Prefer local Ollama with Qwen; use one cloud API only if local storage or memory is not sufficient. |
+| GitHub | Stores your work. A separate, restricted token prepares the optional GitHub research extension. |
+| Langfuse Cloud | Lets you inspect the public repair trajectory in the optional observability extension. |
 
-You do **not** need Ollama, a local LLM, an OpenAI key, a GitHub token, a
-Langfuse account, or a Docker image before the required lab. Those are optional
-extensions and must not delay your preparation.
+The required scripted checkpoints work without a live LLM. We nevertheless
+prepare a live-model route, GitHub, and Langfuse now so that optional work does
+not turn into account setup during the lab.
+
+> **Cost and credential rule.** We strongly recommend local Ollama and
+> `qwen2.5-coder:7b`. If your computer cannot store or run it, you may choose a
+> cloud provider. You are responsible for creating that account, accepting its
+> terms, and every charge to its payment method or credits. Never put a key or
+> token in a Git commit, source file, screenshot, or chat with a coding
+> assistant.
 
 ## Preparation flow
 
 ```mermaid
 flowchart LR
-    accounts["(1) Sign in to GitHub"] --> tools["(2) Install and check\nGit, Python, Docker"]
-    tools --> fork["(3) Fork the correct\nactivity branch"]
-    fork --> clone["(4) Clone your fork\nand create .venv"]
-    clone --> check["(5) Run the\nreadiness check"]
+    account["(1) GitHub account"] --> tools["(2) Install Git, Python, Docker"]
+    tools --> clone["(3) Fork, clone, and install packages"]
+    clone --> vibe["(4) Sign in to one vibe-coding assistant"]
+    vibe --> model["(5) Test local Ollama or one cloud API"]
+    model --> github["(6) Test a restricted GitHub token"]
+    github --> langfuse["(7) Test Langfuse Cloud"]
+    langfuse --> ready["(8) Final readiness check"]
 
     classDef accountBox fill:#f3e8ff,stroke:#9333ea,color:#581c87
     classDef toolBox fill:#dbeafe,stroke:#2563eb,color:#172554
-    classDef gitBox fill:#ffedd5,stroke:#ea580c,color:#7c2d12
-    classDef checkBox fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef setupBox fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+    classDef modelBox fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef serviceBox fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef checkBox fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
 
-    class accounts accountBox
+    class account accountBox
     class tools toolBox
-    class fork,clone gitBox
-    class check checkBox
+    class clone,vibe setupBox
+    class model modelBox
+    class github,langfuse serviceBox
+    class ready checkBox
 ```
 
 ## 1. Install and check the local tools
 
-Install any missing tool using its official page, then close and reopen your
+Install any missing tool using its official page, then close and reopen the
 terminal before checking it.
 
 | Tool | Official installation page | Successful check |
@@ -78,11 +94,7 @@ Start Docker Desktop before running `docker info`. The command must finish
 without an error and show information under **Server**. On Windows, Docker
 Desktop normally uses Linux containers through WSL 2. If your computer is
 managed by an institution or virtualization is disabled, ask for help before
-the lab rather than trying to replace Docker with host Python.
-
-Keep free disk space for the Docker image and Python packages. The required
-activity does not download a model. The optional `qwen2.5-coder:7b` model is
-about 5 GB and is not needed tomorrow.
+the lab rather than replacing Docker with host Python.
 
 ## 2. Fork the correct activity branch
 
@@ -94,7 +106,7 @@ default `main` branch. Open this exact page in your browser:
 Select **Fork**. If GitHub shows a **Copy the DEFAULT branch only** option,
 leave it unchecked. Your fork must include `guided-from-scratch-activity`.
 
-## 3. Clone your fork
+## 3. Clone your fork and install the packages
 
 Replace `YOUR-USERNAME` with your GitHub username. These commands download the
 guided activity, not the default starter.
@@ -114,13 +126,8 @@ Expected outcome:
 Do not run `git init`. Cloning already created the Git repository. Do not
 create the `build-repair-agent` work branch yet; Task 0 starts with that step.
 
-If Git says that it cannot find `guided-from-scratch-activity`, delete only
-this incomplete clone, return to Step 2, and make sure your fork includes all
-branches. Do not continue from `main`.
-
-## 4. Create the Python environment and install packages
-
-Run these commands from the `coding-agent-lab` folder you just cloned.
+Create the Python environment from the `coding-agent-lab` folder you just
+cloned.
 
 **macOS or Linux**
 
@@ -150,28 +157,185 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 Expected outcome: `python -m pip check` reports no broken requirements.
+The installed requirements already include the OpenAI, Gemini, and Langfuse
+Python clients used by the connection checks below; do not run extra `pip
+install` commands for them.
 
 Do **not** run `pytest` yet. The supplied `evals/` projects intentionally
 contain bugs, and Task 0 will create `pytest.ini` to ensure that host Python
 never runs those project tests.
 
-## 5. Readiness check
+## 4. Prepare one vibe-coding assistant
 
-With `.venv` active and Docker running, run the commands below.
+Choose one assistant and sign in before the lab. Any of these is suitable:
+
+- [Codex](https://developers.openai.com/codex/)
+- [Claude Code](https://code.claude.com/docs/en/overview)
+- [Cursor](https://cursor.com/downloads)
+
+Open your cloned `coding-agent-lab` folder in the selected tool. Send this
+safe first message:
+
+```text
+Read README.md only. Do not modify any files. Tell me the title of the first task.
+```
+
+Then run `git status --short` in the terminal. It must remain empty. This
+confirms that the assistant is signed in, can see the repository, and did not
+make an unrequested edit. During the lab, it will help you create the agent;
+it does not replace the repair model described next.
+
+## 5. Choose and test one repair-model route
+
+Choose one route. Route A is strongly preferred because it keeps the repair
+model on your computer. Route B is a fallback only for machines with limited
+storage or memory. This test asks a model for a short text response; it does
+not run project code.
+
+### Route A: local Ollama with Qwen, preferred
+
+Install Ollama from the [official download page](https://ollama.com/download).
+After installation, open a new terminal and run:
+
+```bash
+ollama --version
+ollama pull qwen2.5-coder:7b
+ollama run qwen2.5-coder:7b "Reply exactly: OLLAMA READY"
+```
+
+The download is roughly 5 GB and the first response may take longer than later
+ones. Success means the last command returns `OLLAMA READY` (minor punctuation
+is harmless). Leave the model installed and verify it is visible:
+
+```bash
+ollama list
+```
+
+If the download, memory use, or response time is unacceptable, stop here and
+use Route B. Do not spend the lab attempting to make an unsuitable local model
+work.
+
+### Route B: one cloud LLM API, fallback
+
+Choose **one** provider, create an API key, and run its first-request test. A
+successful request can consume credits. The provider account, API key, model
+choice, and charges are your responsibility.
+
+| Provider | Set up an account and key | Environment variables to set | First-request test |
+| --- | --- | --- | --- |
+| OpenAI API | Follow the [official Python quickstart](https://developers.openai.com/api/docs/quickstart) and create an API key in the linked Platform dashboard. | `OPENAI_API_KEY` and `OPENAI_MODEL` | Run the OpenAI command below. |
+| Gemini API | Follow the [Gemini API getting-started guide](https://ai.google.dev/gemini-api/docs/get-started?lang=python) and create a key in Google AI Studio. | `GEMINI_API_KEY` and `GEMINI_MODEL` | Run the Gemini command below. |
+| Vertex AI or another provider | Use that provider's official quickstart to create credentials and make one text request. | Follow that provider's documentation. | Keep its equivalent one-request proof for the instructor. |
+
+Set a key only for the current terminal session. Replace the placeholders, but
+never paste a real key into a source file. For `OPENAI_MODEL` or
+`GEMINI_MODEL`, use the exact text-model identifier enabled in your own
+provider account or playground.
+
+**OpenAI, macOS or Linux**
+
+```bash
+export OPENAI_API_KEY="replace-with-your-key"
+export OPENAI_MODEL="a-model-available-in-your-account"
+python -c "from openai import OpenAI; import os; print(OpenAI().responses.create(model=os.environ['OPENAI_MODEL'], input='Reply exactly: API READY').output_text)"
+```
+
+**OpenAI, Windows PowerShell**
+
+```powershell
+$env:OPENAI_API_KEY="replace-with-your-key"
+$env:OPENAI_MODEL="a-model-available-in-your-account"
+python -c "from openai import OpenAI; import os; print(OpenAI().responses.create(model=os.environ['OPENAI_MODEL'], input='Reply exactly: API READY').output_text)"
+```
+
+**Gemini, macOS or Linux**
+
+```bash
+export GEMINI_API_KEY="replace-with-your-key"
+export GEMINI_MODEL="a-model-available-in-your-account"
+python -c "from google import genai; import os; print(genai.Client().interactions.create(model=os.environ['GEMINI_MODEL'], input='Reply exactly: API READY').output_text)"
+```
+
+**Gemini, Windows PowerShell**
+
+```powershell
+$env:GEMINI_API_KEY="replace-with-your-key"
+$env:GEMINI_MODEL="a-model-available-in-your-account"
+python -c "from google import genai; import os; print(genai.Client().interactions.create(model=os.environ['GEMINI_MODEL'], input='Reply exactly: API READY').output_text)"
+```
+
+Success means the command prints `API READY` or a clearly equivalent short
+reply. A cloud key does not automatically add a cloud adapter to the lab. The
+guided activity first defines one small `ChatClient` interface; after that, a
+student who uses a cloud provider may ask their coding assistant to add one
+adapter that satisfies that interface. Do not add that code during pre-lab
+setup.
+
+## 6. Prepare and test the GitHub research connection
+
+The later GitHub extension is restricted to GitHub code search. It is not a
+general browser. Create a separate, short-lived **fine-grained personal access
+token** named `coding-agent-lab-research`. In GitHub: profile picture,
+**Settings**, **Developer settings**, **Personal access tokens**,
+**Fine-grained tokens**, then **Generate new token**. Use the smallest
+permissions and shortest expiration that work; it must not have repository
+write permission. GitHub's [personal-access-token guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+explains these choices.
+
+Set it only in the current terminal, then run this connection check:
 
 **macOS or Linux**
 
 ```bash
-git branch --show-current
-git status --short
-python --version
-python -m pip check
-docker info --format '{{.ServerVersion}}'
+export GITHUB_TOKEN="replace-with-your-token"
+python -c "import json, os, urllib.request; request=urllib.request.Request('https://api.github.com/user', headers={'Authorization': 'Bearer ' + os.environ['GITHUB_TOKEN'], 'Accept': 'application/vnd.github+json'}); print('GITHUB READY:', json.load(urllib.request.urlopen(request, timeout=10))['login'])"
 ```
 
 **Windows PowerShell**
 
 ```powershell
+$env:GITHUB_TOKEN="replace-with-your-token"
+python -c "import json, os, urllib.request; request=urllib.request.Request('https://api.github.com/user', headers={'Authorization': 'Bearer ' + os.environ['GITHUB_TOKEN'], 'Accept': 'application/vnd.github+json'}); print('GITHUB READY:', json.load(urllib.request.urlopen(request, timeout=10))['login'])"
+```
+
+Success prints `GITHUB READY:` followed by your GitHub login. The command does
+not display the token. Do not use your normal Git password or a broad token.
+
+## 7. Prepare and test Langfuse Cloud
+
+This activity uses [Langfuse Cloud](https://cloud.langfuse.com), not a local or
+self-hosted installation. Create an account, make one project, then create API
+credentials in that project's settings. Set the key pair and the Cloud region
+for the current terminal. The standard EU Cloud URL is shown below; use the URL
+displayed by your own project if you selected another region.
+
+**macOS or Linux**
+
+```bash
+export LANGFUSE_PUBLIC_KEY="replace-with-your-public-key"
+export LANGFUSE_SECRET_KEY="replace-with-your-secret-key"
+export LANGFUSE_BASE_URL="https://cloud.langfuse.com"
+python -c "from langfuse import get_client; client=get_client(); assert client.auth_check(); print('LANGFUSE READY')"
+```
+
+**Windows PowerShell**
+
+```powershell
+$env:LANGFUSE_PUBLIC_KEY="replace-with-your-public-key"
+$env:LANGFUSE_SECRET_KEY="replace-with-your-secret-key"
+$env:LANGFUSE_BASE_URL="https://cloud.langfuse.com"
+python -c "from langfuse import get_client; client=get_client(); assert client.auth_check(); print('LANGFUSE READY')"
+```
+
+Success prints `LANGFUSE READY`. The command only verifies credentials. The
+optional lab task will later record the public action trajectory; do not send
+source files, keys, or private test output to Langfuse.
+
+## 8. Final readiness check
+
+With `.venv` active and Docker running, run:
+
+```bash
 git branch --show-current
 git status --short
 python --version
@@ -182,38 +346,39 @@ docker info --format '{{.ServerVersion}}'
 You are ready when all statements below are true:
 
 - [ ] The branch is `guided-from-scratch-activity`.
-- [ ] `git status --short` is empty immediately after the clone and package setup.
-- [ ] Python is version 3.11 or newer.
-- [ ] `python -m pip check` reports no broken requirements.
+- [ ] `git status --short` is empty immediately after setup.
+- [ ] Python is version 3.11 or newer and `python -m pip check` reports no broken requirements.
 - [ ] Docker prints a server version instead of an error.
-- [ ] You can sign in to GitHub and see your fork.
+- [ ] One vibe-coding assistant can read the cloned repository without changing it.
+- [ ] Local Ollama returns `OLLAMA READY`, **or** one cloud provider returns `API READY`.
+- [ ] The GitHub connection prints your login.
+- [ ] Langfuse Cloud prints `LANGFUSE READY`.
 
 ## If a check fails
 
-Do not spend the laboratory time solving a computer-installation problem.
-Before class, send the instructor this small report, with no passwords, API
-keys, or tokens:
+Do not spend laboratory time solving a computer-installation or account issue.
+Before class, send the instructor this short report. Do not include passwords,
+API keys, tokens, or screenshots containing them.
 
 ```text
 Operating system and version:
-Git command and output:
-Python command and output:
-Docker command and complete error:
-At which numbered preparation step did it fail?
+Which numbered preparation step failed:
+Command used:
+Complete error message with credentials removed:
 ```
-
-Common fixes:
 
 | Problem | First action |
 | --- | --- |
-| `git`, `python3`, `py`, or `docker` is not found | Install the missing tool from the links above, then reopen the terminal. |
-| `docker info` cannot connect to the daemon | Start Docker Desktop and wait until it reports that the engine is running. |
-| Docker will not start on Windows | Check the Docker Desktop message about WSL 2 or hardware virtualization; institutional devices may need IT support. |
-| `pip install` fails | Confirm Internet access and available disk space. Keep the full error for the instructor. |
+| `git`, `python3`, `py`, `docker`, or `ollama` is not found | Install the missing tool from its official link, then reopen the terminal. |
+| `docker info` cannot connect to the daemon | Start Docker Desktop and wait until the engine is running. |
+| Ollama does not fit or is too slow | Use exactly one cloud-provider route and confirm that you accept its billing responsibility. |
+| A cloud request returns authentication or billing errors | Check the provider dashboard, key, selected model, and account billing. Do not share the key. |
+| GitHub check returns 401 or 403 | Create a new restricted fine-grained token and check that it has not expired. |
+| Langfuse check fails | Recheck the two keys and the Cloud region URL in the project's settings. |
 | The clone is on `main` | Delete that incomplete clone and repeat Step 2 and Step 3 with `guided-from-scratch-activity`. |
 
 ## Tomorrow: where to begin
 
-Bring your laptop, charger, GitHub sign-in, and this completed environment.
-At the start of the lab, open the [activity overview](../README.md), then
-follow [Task 0: Set up the repository and environment](../tasks/00-setup.md).
+Bring your laptop, charger, GitHub sign-in, and this completed environment. At
+the start of the lab, open the [activity overview](../README.md), then follow
+[Task 0: Set up the repository and environment](../tasks/00-setup.md).

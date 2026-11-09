@@ -4,7 +4,7 @@
   <img src="docs/assets/python-repair-agent-icon.png" width="180" alt="A repair agent fixes a code bug and verifies the repair">
 </p>
 
-> **Before the lab:** complete the [Pre-lab environment check](docs/pre-lab-setup.md). It takes about 20 to 30 minutes and prevents installation delays during the activity.
+> **Before the lab:** complete the [Pre-lab environment check](docs/pre-lab-setup.md). Allow 45 to 60 minutes, plus a local-model download if you choose Ollama. It verifies the environment, model route, GitHub, and Langfuse connections before the activity begins.
 
 ## A guided, from-scratch activity
 
@@ -62,8 +62,9 @@ Set up these required tools before class:
 - A code editor and one vibe-coding assistant, such as Codex, Claude Code, or Cursor.
 - A browser and Internet connection for the initial fork, Python-package installation, and Docker image download.
 
-Keep some free disk space for the Docker image. The optional Ollama model in
-Task 7 is about 5 GB, so skip that task if local storage is limited.
+Keep some free disk space for the Docker image. The pre-lab page asks you to
+test a preferred local Ollama model or one cloud fallback before class; Task 7
+is where you connect that prepared model route to the agent.
 
 Check your local tools before class:
 
