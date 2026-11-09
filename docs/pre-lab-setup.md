@@ -17,9 +17,9 @@ a common confusion.
 | Item | Its role in this activity |
 | --- | --- |
 | A vibe-coding assistant | Helps you create and review the lab code. Choose Codex, Claude Code, or Cursor. It is not the model that your repair agent calls. |
-| A repair-model route | Supplies the live model response in optional Task 7. Prefer local Ollama with Qwen; use one cloud API only if local storage or memory is not sufficient. |
-| GitHub | Stores your work. A separate, restricted token prepares the optional GitHub research extension. |
-| Langfuse Cloud | Lets you inspect the public repair trajectory in the optional observability extension. |
+| A repair-model route | Supplies the live model response during the lab. Prefer local Ollama with Qwen; use one cloud API only if local storage or memory is not sufficient. |
+| GitHub | Stores your work. A separate, restricted token can later support bounded code research. |
+| Langfuse Cloud | Can record the public repair trajectory for later inspection. |
 
 The required scripted checkpoints work without a live LLM. We nevertheless
 prepare a live-model route, GitHub, and Langfuse now so that optional work does
@@ -98,9 +98,9 @@ the lab rather than replacing Docker with host Python.
 
 ## 2. Prepare a small Python environment for connection checks
 
-Do not clone or fork the activity repository today. Tomorrow's Task 0 provides
-those instructions. For today's cloud and Langfuse checks, create a temporary
-folder anywhere convenient, then create a small virtual environment inside it.
+This readiness check does not require a repository. For today's cloud and
+Langfuse checks, create a temporary folder anywhere convenient, then create a
+small virtual environment inside it.
 
 **macOS or Linux**
 
@@ -134,8 +134,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 Expected outcome: `python -m pip check` reports no broken requirements. This
-environment is only for today's connection checks. Tomorrow you will make a
-new `.venv` inside the repository.
+environment is only for the connection checks on this page.
 
 ## 3. Prepare one vibe-coding assistant
 
@@ -298,9 +297,8 @@ $env:LANGFUSE_BASE_URL="https://cloud.langfuse.com"
 python -c "from langfuse import get_client; client=get_client(); assert client.auth_check(); print('LANGFUSE READY')"
 ```
 
-Success prints `LANGFUSE READY`. The command only verifies credentials. The
-optional lab task will later record the public action trajectory; do not send
-source files, keys, or private test output to Langfuse.
+Success prints `LANGFUSE READY`. The command only verifies credentials; do not
+send source files, keys, or private test output to Langfuse.
 
 ## 7. Final readiness check
 
@@ -342,10 +340,3 @@ Complete error message with credentials removed:
 | A cloud request returns authentication or billing errors | Check the provider dashboard, key, selected model, and account billing. Do not share the key. |
 | GitHub check returns 401 or 403 | Create a new restricted fine-grained token and check that it has not expired. |
 | Langfuse check fails | Recheck the two keys and the Cloud region URL in the project's settings. |
-
-## Tomorrow: where to begin
-
-Bring your laptop, charger, GitHub sign-in, and this completed environment. At
-the start of the lab, open the [activity overview](../README.md), then follow
-[Task 0: Set up the repository and environment](../tasks/00-setup.md). Task 0
-is where you will fork and clone the guided repository.
