@@ -22,6 +22,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default="scripted",
         help="chat provider (default: scripted)",
     )
+    subparsers.add_parser("ui", help="start the local scripted-repair page")
     return parser
 
 
@@ -91,6 +92,16 @@ def _print_result(result: Any) -> None:
 def main(argv: list[str] | None = None) -> int:
     """Run the selected command and return a process exit status."""
     args = _build_parser().parse_args(argv)
+    if args.command == "ui":
+        from adapters.gradio_ui import create_demo
+
+        try:
+            create_demo().launch()
+        except (OSError, RuntimeError, ValueError) as error:
+            print(f"UI could not start: {error}", file=sys.stderr)
+            return 2
+        return 0
+
     try:
         service = create_repair_service(args.provider)
         result = service.repair(args.project)
