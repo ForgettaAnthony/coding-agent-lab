@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from adapters.models.ollama import OllamaClient
 from adapters.models.scripted import ScriptedClient
 from adapters.sandbox import runner
 from adapters.sandbox.repair_tools import RepairTools
@@ -12,7 +13,7 @@ from core.repair_service import RepairService
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-SUPPORTED_PROVIDERS = ("scripted",)
+SUPPORTED_PROVIDERS = ("scripted", "ollama")
 
 SCRIPTED_REPAIRS: dict[str, dict[str, Any]] = {
     "arithmetic": {
@@ -105,13 +106,20 @@ def _scripted_responses(case_name: str) -> list[str]:
     ]
 
 
-def create_repair_service(provider: str = "scripted") -> RepairService:
+def create_repair_service(
+    provider: str = "scripted",
+    model: str | None = None,
+    temperature: float = 0.0,
+) -> RepairService:
     """Connect the selected client, Docker tools, agent, and service."""
     if provider not in SUPPORTED_PROVIDERS:
         raise ValueError(f"Unsupported provider: {provider}")
 
     def agent_factory(case_name: str, workspace: Path) -> RepairAgent:
-        client = ScriptedClient(_scripted_responses(case_name))
+        if provider == "scripted":
+            client = ScriptedClient(_scripted_responses(case_name))
+        else:
+            client = OllamaClient(model=model, temperature=temperature)
         tools = RepairTools(workspace)
         return RepairAgent(client, tools)
 

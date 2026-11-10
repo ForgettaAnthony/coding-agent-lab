@@ -22,6 +22,17 @@ def _build_parser() -> argparse.ArgumentParser:
         default="scripted",
         help="chat provider (default: scripted)",
     )
+    repair_parser.add_argument(
+        "--model",
+        default=None,
+        help="Ollama model (default: OLLAMA_MODEL or qwen2.5-coder:7b)",
+    )
+    repair_parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.0,
+        help="Ollama sampling temperature (default: 0.0)",
+    )
     subparsers.add_parser("ui", help="start the local scripted-repair page")
     return parser
 
@@ -103,7 +114,11 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     try:
-        service = create_repair_service(args.provider)
+        service = create_repair_service(
+            args.provider,
+            model=args.model,
+            temperature=args.temperature,
+        )
         result = service.repair(args.project)
     except (OSError, RuntimeError, ValueError) as error:
         print(f"Repair could not start: {error}", file=sys.stderr)
