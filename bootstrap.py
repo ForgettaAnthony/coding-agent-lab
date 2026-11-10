@@ -8,6 +8,7 @@ from adapters.models.ollama import OllamaClient
 from adapters.models.scripted import ScriptedClient
 from adapters.sandbox import runner
 from adapters.sandbox.repair_tools import RepairTools
+from core.ports import TraceRecorder
 from core.repair_agent import RepairAgent
 from core.repair_service import RepairService
 
@@ -110,6 +111,7 @@ def create_repair_service(
     provider: str = "scripted",
     model: str | None = None,
     temperature: float = 0.0,
+    recorder: TraceRecorder | None = None,
 ) -> RepairService:
     """Connect the selected client, Docker tools, agent, and service."""
     if provider not in SUPPORTED_PROVIDERS:
@@ -121,7 +123,7 @@ def create_repair_service(
         else:
             client = OllamaClient(model=model, temperature=temperature)
         tools = RepairTools(workspace)
-        return RepairAgent(client, tools)
+        return RepairAgent(client, tools, recorder=recorder)
 
     return RepairService(
         evals_root=PROJECT_ROOT / "evals",

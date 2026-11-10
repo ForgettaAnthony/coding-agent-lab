@@ -1,7 +1,6 @@
-"""Command-line entry point for deterministic repair demonstrations."""
+"""Command-line entry point for repair demonstrations and the local UI."""
 
 import argparse
-import json
 import sys
 from typing import Any
 
@@ -37,67 +36,93 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _print_trace_entry(entry: dict[str, Any]) -> None:
-    """Print one public trace event in a readable form."""
-    event = entry.get("event")
-    if event == "repair_started":
-        print(f"- repair started: {entry.get('case')}")
-    elif event == "model_response":
-        decision = entry.get("decision")
-        if entry.get("status") == "accepted":
-            details = entry.get("tool", "unknown")
-            if entry.get("path"):
-                details += f" {entry['path']}"
-            if entry.get("summary"):
-                details += f" - {entry['summary']}"
-            print(f"- decision {decision}: {details}")
-        else:
-            print(f"- decision {decision}: {entry.get('error', 'model error')}")
-    elif event == "tool_result":
-        tool = entry.get("tool", "unknown")
-        if entry.get("status") != "ok":
-            print(f"- {tool}: {entry.get('error', 'tool error')}")
-        elif tool == "run_tests":
-            outcome = "passed" if entry.get("passed") else "failed"
-            print(f"- run_tests: {outcome} (return code {entry.get('returncode')})")
-            if entry.get("output"):
-                for line in str(entry["output"]).splitlines():
-                    print(f"    {line}")
-        elif entry.get("path"):
-            print(f"- {tool}: {entry['path']}")
-        else:
-            print(f"- {tool}: complete")
-    elif event == "repair_finished":
-        outcome = "passed" if entry.get("passed") else "failed"
-        print(f"- repair {outcome}: {entry.get('reason')}")
-    else:
-        print(f"- {json.dumps(entry, sort_keys=True)}")
+def _print_labeled_step(label: str, headline: str, detail: str | None = None) -> None:
+    """Print one flushed terminal step with optional indented detail."""
+    print(f"{label:<9}{headline}", flush=True)
+    if detail:
+        for line in detail.splitlines():
+            print(f"{'':9}  {line}", flush=True)
+
+
+class TerminalTraceRecorder:
+    """Render public repair events as live, human-friendly terminal steps."""
+
+    def record(self, event: str, payload: dict[str, Any]) -> None:
+        """Print one labeled public event without changing stored trace data."""
+        decision = payload.get("decision")
+        step = f"#{decision} " if decision is not None else ""
+
+        if event == "repair_started":
+            _print_labeled_step("START", f"repair {payload.get('case')}")
+            return
+
+        if event == "model_response":
+            if payload.get("status") == "accepted":
+                detail = str(payload.get("tool", "unknown"))
+                if payload.get("path"):
+                    detail += f" {payload['path']}"
+                if payload.get("summary"):
+                    detail += f" - {payload['summary']}"
+                _print_labeled_step("ACTION", f"{step}{detail}")
+            else:
+                status = str(payload.get("status", "error")).upper()
+                _print_labeled_step(
+                    "ACTION",
+                    f"{step}{status}",
+                    str(payload.get("error", "model error")),
+                )
+            return
+
+        if event == "tool_result":
+            tool = str(payload.get("tool", "unknown"))
+            status = str(payload.get("status", "error"))
+            if status != "ok":
+                _print_labeled_step(
+                    "RESULT",
+                    f"{step}{tool} {status.upper()}",
+                    str(payload.get("error", "tool error")),
+                )
+            elif tool == "run_tests":
+                outcome = "PASSED" if payload.get("passed") else "FAILED"
+                _print_labeled_step(
+                    "RESULT",
+                    f"{step}run_tests {outcome} "
+                    f"(return code {payload.get('returncode')})",
+                    str(payload.get("output", "")),
+                )
+            elif payload.get("path"):
+                _print_labeled_step(
+                    "RESULT", f"{step}{tool} OK - {payload['path']}"
+                )
+            else:
+                _print_labeled_step("RESULT", f"{step}{tool} OK")
+            return
+
+        if event == "repair_finished":
+            outcome = "PASSED" if payload.get("passed") else "FAILED"
+            _print_labeled_step(
+                "FINISHED", outcome, str(payload.get("reason", ""))
+            )
 
 
 def _print_result(result: Any) -> None:
-    """Print the public trace and final repair artifacts."""
-    print("Public trace:")
-    for entry in result.trace:
-        _print_trace_entry(entry)
-
+    """Print changed files and the final sandboxed test status."""
+    print(f"\nWorkspace: {result.workspace}")
     print("Changed files:")
     if result.changed_files:
         for path in result.changed_files:
-            print(f"- {path}")
+            print(f"  - {path}")
     else:
-        print("- (none)")
+        print("  - (none)")
 
-    print(f"Workspace: {result.workspace}")
-    print("Final sandboxed test result:")
     if result.last_test is None:
-        print("- no test result")
+        print("Final sandboxed test status: NOT RUN")
     else:
-        outcome = "passed" if result.last_test.passed else "failed"
-        print(f"- {outcome} (return code {result.last_test.returncode})")
-        if result.last_test.output:
-            print(result.last_test.output)
-
-    print(f"Final repair result: {'PASSED' if result.passed else 'FAILED'}")
+        outcome = "PASSED" if result.last_test.passed else "FAILED"
+        print(
+            "Final sandboxed test status: "
+            f"{outcome} (return code {result.last_test.returncode})"
+        )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -118,6 +143,7 @@ def main(argv: list[str] | None = None) -> int:
             args.provider,
             model=args.model,
             temperature=args.temperature,
+            recorder=TerminalTraceRecorder(),
         )
         result = service.repair(args.project)
     except (OSError, RuntimeError, ValueError) as error:

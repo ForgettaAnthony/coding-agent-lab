@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from core.models import ModelAction, RepairResult, TestResult
-from core.ports import ChatClient, RepairToolsPort
+from core.ports import ChatClient, RepairToolsPort, TraceRecorder
 from core.prompts import case_request, system_instruction, tool_result_message
 
 
@@ -87,9 +87,15 @@ def _parse_action(raw_response: str) -> ModelAction:
 class RepairAgent:
     """Run a bounded, policy-checked repair attempt."""
 
-    def __init__(self, client: ChatClient, tools: RepairToolsPort) -> None:
+    def __init__(
+        self,
+        client: ChatClient,
+        tools: RepairToolsPort,
+        recorder: TraceRecorder | None = None,
+    ) -> None:
         self.client = client
         self.tools = tools
+        self.recorder = recorder
 
     def repair(
         self,
@@ -103,9 +109,8 @@ class RepairAgent:
             {"role": "system", "content": system_instruction()},
             {"role": "user", "content": case_request(case_name, relative_files)},
         ]
-        trace: list[dict[str, Any]] = [
-            {"event": "repair_started", "case": case_name}
-        ]
+        trace: list[dict[str, Any]] = []
+        self._emit(trace, {"event": "repair_started", "case": case_name})
         changed_files: list[str] = []
         last_test: TestResult | None = None
         read_observed = False
@@ -117,13 +122,14 @@ class RepairAgent:
                 raw_response = self.client.chat(messages)
             except Exception as error:
                 message = f"Client error: {type(error).__name__}: {error}"
-                trace.append(
+                self._emit(
+                    trace,
                     {
                         "event": "model_response",
                         "decision": decision,
                         "status": "error",
                         "error": message,
-                    }
+                    },
                 )
                 return self._finish(
                     False,
@@ -138,13 +144,14 @@ class RepairAgent:
                 action = _parse_action(raw_response)
             except ValueError as error:
                 message = str(error)
-                trace.append(
+                self._emit(
+                    trace,
                     {
                         "event": "model_response",
                         "decision": decision,
                         "status": "invalid",
                         "error": message,
-                    }
+                    },
                 )
                 return self._finish(
                     False,
@@ -166,7 +173,7 @@ class RepairAgent:
                 response_event["summary"] = action.summary
             if "path" in action.arguments:
                 response_event["path"] = action.arguments["path"]
-            trace.append(response_event)
+            self._emit(trace, response_event)
 
             if action.tool == "edit_file" and not (
                 read_observed and failing_test_observed
@@ -181,14 +188,15 @@ class RepairAgent:
                         "content": tool_result_message(action.tool, observation),
                     }
                 )
-                trace.append(
+                self._emit(
+                    trace,
                     {
                         "event": "tool_result",
                         "decision": decision,
                         "tool": action.tool,
                         "status": "policy_error",
                         "error": observation,
-                    }
+                    },
                 )
                 continue
 
@@ -245,14 +253,15 @@ class RepairAgent:
                         "content": tool_result_message(action.tool, observation),
                     }
                 )
-                trace.append(
+                self._emit(
+                    trace,
                     {
                         "event": "tool_result",
                         "decision": decision,
                         "tool": action.tool,
                         "status": "error",
                         "error": observation,
-                    }
+                    },
                 )
                 continue
 
@@ -262,7 +271,7 @@ class RepairAgent:
                     "content": tool_result_message(action.tool, observation),
                 }
             )
-            trace.append(tool_event)
+            self._emit(trace, tool_event)
 
             if action.tool == "run_tests" and last_test is not None:
                 if last_test.passed and edit_completed:
@@ -302,8 +311,24 @@ class RepairAgent:
             f"output:\n{result.output}"
         )
 
-    @staticmethod
+    def _emit(
+        self,
+        trace: list[dict[str, Any]],
+        entry: dict[str, Any],
+    ) -> None:
+        """Store and best-effort publish one public trace entry."""
+        trace.append(entry)
+        if self.recorder is None:
+            return
+        event = str(entry["event"])
+        payload = {key: value for key, value in entry.items() if key != "event"}
+        try:
+            self.recorder.record(event, payload)
+        except Exception:
+            pass
+
     def _finish(
+        self,
         passed: bool,
         reason: str,
         trace: list[dict[str, Any]],
@@ -312,8 +337,9 @@ class RepairAgent:
         last_test: TestResult | None,
     ) -> RepairResult:
         """Append the final event and build a repair result."""
-        trace.append(
-            {"event": "repair_finished", "passed": passed, "reason": reason}
+        self._emit(
+            trace,
+            {"event": "repair_finished", "passed": passed, "reason": reason},
         )
         return RepairResult(
             passed=passed,

@@ -54,6 +54,16 @@ class FakeTools:
         return self.test_results.pop(0)
 
 
+class RecordingTraceRecorder:
+    """Capture emitted public events for assertions."""
+
+    def __init__(self) -> None:
+        self.events: list[tuple[str, dict[str, object]]] = []
+
+    def record(self, event: str, payload: dict[str, object]) -> None:
+        self.events.append((event, payload))
+
+
 def run_agent(
     responses: list[str],
     tools: FakeTools,
@@ -218,3 +228,50 @@ def test_tool_error_is_visible_and_model_can_continue() -> None:
     assert isinstance(client, RecordingScriptedClient)
     assert "Tool error" in client.histories[1][-1]["content"]
     assert any(entry.get("status") == "error" for entry in result.trace)
+
+
+def test_recorder_receives_stored_trace_entries_in_order() -> None:
+    failing = TestResult(False, "line one\nline two", 1)
+    passing = TestResult(True, "one passed", 0)
+    tools = FakeTools([failing, passing])
+    client = ScriptedClient(
+        [
+            '{"tool":"read_file","path":"sample.py"}',
+            '{"tool":"run_tests"}',
+            '{"tool":"edit_file","path":"sample.py","content":"fixed"}',
+            '{"tool":"run_tests"}',
+        ]
+    )
+    recorder = RecordingTraceRecorder()
+
+    result = RepairAgent(client, tools, recorder=recorder).repair(
+        "sample", ["sample.py"], WORKSPACE
+    )
+
+    emitted = [{"event": event, **payload} for event, payload in recorder.events]
+    assert result.passed is True
+    assert emitted == result.trace
+
+
+def test_recorder_failure_does_not_change_repair_result() -> None:
+    class FailingRecorder:
+        def record(self, event: str, payload: dict[str, object]) -> None:
+            raise RuntimeError("display unavailable")
+
+    passing = TestResult(True, "one passed", 0)
+    tools = FakeTools([TestResult(False, "one failed", 1), passing])
+    client = ScriptedClient(
+        [
+            '{"tool":"read_file","path":"sample.py"}',
+            '{"tool":"run_tests"}',
+            '{"tool":"edit_file","path":"sample.py","content":"fixed"}',
+            '{"tool":"run_tests"}',
+        ]
+    )
+
+    result = RepairAgent(client, tools, recorder=FailingRecorder()).repair(
+        "sample", ["sample.py"], WORKSPACE
+    )
+
+    assert result.passed is True
+    assert result.last_test == passing
